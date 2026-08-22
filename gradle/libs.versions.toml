@@ -6,6 +6,7 @@ kotlin = "2.4.10"
 # Compose
 activityCompose = "1.13.0"
 composeBom = "2026.08.00"
+nav3 = "1.1.6"
 
 # AndroidX / Google
 coreKtx = "1.19.0"
@@ -32,6 +33,11 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 # Lifecycle
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycle" }
+
+# Navigation3
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
