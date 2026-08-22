@@ -44,7 +44,6 @@ kotlin {
 dependencies {
     // AndroidX & Core
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
@@ -56,6 +55,10 @@ dependencies {
 
     // Splash Screen
     implementation(libs.androidx.core.splashscreen)
+
+    // Lifecycle
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Unit Tests
     testImplementation(libs.junit)
