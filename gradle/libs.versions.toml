@@ -18,6 +18,11 @@ room = "2.8.4"
 hilt = "2.60.1"
 hiltAndroidx = "1.4.0"
 
+# Networking
+okhttp = "5.5.0"
+retrofit = "3.0.0"
+gson = "2.14.0"
+
 # Third Party
 coil = "2.7.0"
 
@@ -66,6 +71,13 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt"
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltAndroidx" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltAndroidx" }
+
+# Networking
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
