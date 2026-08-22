@@ -86,8 +86,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
     implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.gson)
+    implementation(libs.converter.kotlinx.serialization)
 
     // Third Party Utilities
     implementation(libs.coil.compose)
