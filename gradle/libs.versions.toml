@@ -14,6 +14,7 @@ coreKtx = "1.19.0"
 splashScreen = "1.2.0"
 lifecycle = "2.11.0"
 paging = "3.5.1"
+room = "2.8.4"
 
 # Third Party
 coil = "2.7.0"
@@ -52,6 +53,11 @@ androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", vers
 # Paging3
 androidx-paging-runtime-ktx = { module = "androidx.paging:paging-runtime-ktx", version.ref = "paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
+
+# Storage
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
