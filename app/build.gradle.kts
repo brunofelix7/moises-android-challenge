@@ -107,9 +107,12 @@ dependencies {
 
     // Unit Tests
     testImplementation(libs.junit)
+    testRuntimeOnly(libs.junit.vintage.engine)
     testImplementation(libs.truth)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockk)
+    testImplementation(libs.kotest)
+    testImplementation(libs.kotest.runner)
     testImplementation(libs.robolectric)
     testImplementation(libs.arch.core.testing)
     testImplementation(libs.jetbrains.kotlinx.coroutines.core)
