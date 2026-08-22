@@ -2,6 +2,7 @@
 # Project
 agp = "9.3.1"
 kotlin = "2.4.10"
+ksp = "2.3.10"
 
 # Compose
 activityCompose = "1.13.0"
@@ -56,4 +57,4 @@ androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-te
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
+ksp = {id = "com.google.devtools.ksp", version.ref = "ksp"}
