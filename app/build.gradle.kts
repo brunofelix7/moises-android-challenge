@@ -70,6 +70,9 @@ dependencies {
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
 
+    // Third Party Utilities
+    implementation(libs.coil.compose)
+
     // Unit Tests
     testImplementation(libs.junit)
 
