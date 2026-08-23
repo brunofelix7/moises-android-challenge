@@ -29,4 +29,4 @@ data class SongDto(
 
     @SerialName("trackTimeMillis")
     val durationMillis: Long? = null
-)
+) : ItunesResultDto()
