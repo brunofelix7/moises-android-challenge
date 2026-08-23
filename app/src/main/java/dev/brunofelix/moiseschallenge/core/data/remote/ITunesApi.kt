@@ -1,6 +1,7 @@
 package dev.brunofelix.moiseschallenge.core.data.remote
 
 import dev.brunofelix.moiseschallenge.core.data.remote.dto.SearchResponseDto
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -28,7 +29,7 @@ interface ITunesApi {
         @Query("entity") entity: String = "song",
         @Query("limit") limit: Int = 20,
         @Query("offset") offset: Int = 0
-    ): SearchResponseDto
+    ): Response<SearchResponseDto>
 
     /**
      * Retrieves the details of an album and its respective tracks using the ID.
@@ -41,5 +42,5 @@ interface ITunesApi {
     suspend fun lookup(
         @Query("id") id: Long,
         @Query("entity") entity: String = "song"
-    ): SearchResponseDto
+    ): Response<SearchResponseDto>
 }
