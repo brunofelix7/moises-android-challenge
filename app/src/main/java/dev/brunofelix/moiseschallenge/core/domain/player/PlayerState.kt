@@ -25,8 +25,12 @@ sealed interface PlayerState {
     data object Paused : PlayerState
 
     /**
+     * The media has finished playing.
+     */
+    data object Ended : PlayerState
+
+    /**
      * An error occurred during playback (e.g., network loss or decoding failure).
-     *
      * @property message A descriptive error message.
      */
     data class Error(val message: String) : PlayerState
