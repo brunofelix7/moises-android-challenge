@@ -20,4 +20,4 @@ data class AlbumDto(
 
     @SerialName("trackCount")
     val trackCount: Int? = null
-)
+) : ItunesResultDto()
