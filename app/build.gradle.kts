@@ -13,7 +13,6 @@ android {
             minorApiLevel = 1
         }
     }
-
     defaultConfig {
         applicationId = "dev.brunofelix.moiseschallenge"
         minSdk = 26
@@ -23,7 +22,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
             optimization {
@@ -37,8 +35,8 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
-
     testOptions {
         unitTests.all {
             it.useJUnitPlatform()
