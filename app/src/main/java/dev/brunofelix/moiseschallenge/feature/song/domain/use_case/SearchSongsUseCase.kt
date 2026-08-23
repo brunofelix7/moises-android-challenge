@@ -7,11 +7,15 @@ import javax.inject.Inject
 
 /**
  * Use case for searching songs by name.
- *
- * @param query The name to search for.
- * @return A [Resource] containing a list of songs or an error.
  */
 fun interface SearchSongsUseCase {
+    /**
+     * Searches for songs by name.
+     * In an offline-first app, this could hit the API
+     *
+     * @param query The search query.
+     * @return A Resource containing the List<Song> or an error.
+     */
     suspend operator fun invoke(query: String): Resource<List<Song>>
 }
 
@@ -19,5 +23,7 @@ class SearchSongsUseCaseImpl @Inject constructor(
     private val repository: SongRepository
 ): SearchSongsUseCase {
 
-    override suspend fun invoke(query: String) = repository.search(query)
+    override suspend fun invoke(query: String): Resource<List<Song>> {
+        return repository.search(query)
+    }
 }
