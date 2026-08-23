@@ -1,7 +1,7 @@
 package dev.brunofelix.moiseschallenge.core.domain.util.extension
 
 /**
- * Converts iTunes image URL to a different size.
+ * Converts image URL to a URL with the provided size.
  *
  * @param size The size to convert to.
  * @return The URL with the converted size.
