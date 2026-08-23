@@ -1,4 +1,4 @@
-package dev.brunofelix.moiseschallenge.ui.theme
+package dev.brunofelix.moiseschallenge.core.presentation.ui.design_system
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -44,14 +44,13 @@ fun AppTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = appTypography,
         content = content
     )
 }
