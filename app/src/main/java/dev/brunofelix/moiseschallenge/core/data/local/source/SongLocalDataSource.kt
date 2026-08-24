@@ -14,6 +14,14 @@ interface SongLocalDataSource {
     fun getRecentSongs(): Flow<List<Song>>
 
     /**
+     * Retrieves a flow of a specific song by its ID.
+     *
+     * @param id The ID of the song to retrieve.
+     * @return A flow emitting the requested song, or null if not found.
+     */
+    fun observeSongById(id: Long): Flow<Song?>
+
+    /**
      * Saves a recent song.
      * @param song The song to be saved.
      * @return The ID of the saved song.
