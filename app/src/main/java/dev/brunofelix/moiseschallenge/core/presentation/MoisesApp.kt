@@ -20,7 +20,7 @@ import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import dev.brunofelix.moiseschallenge.core.presentation.navigation.NavigationGraph
 import dev.brunofelix.moiseschallenge.core.presentation.navigation.NavigationViewModel
 import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
-import dev.brunofelix.moiseschallenge.core.presentation.ui.design_system.AppTheme
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 
 @Composable
 fun MoisesApp(

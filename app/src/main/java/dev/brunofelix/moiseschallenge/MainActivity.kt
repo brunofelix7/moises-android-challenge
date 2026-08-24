@@ -13,8 +13,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowInsetsControllerCompat
 import dagger.hilt.android.AndroidEntryPoint
 import dev.brunofelix.moiseschallenge.core.presentation.MoisesApp
-import dev.brunofelix.moiseschallenge.core.presentation.ui.design_system.AppTheme
-import dev.brunofelix.moiseschallenge.core.presentation.ui.design_system.backgroundColor
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
