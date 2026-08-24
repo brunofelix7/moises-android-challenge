@@ -119,6 +119,7 @@ robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "
 kotest = { group = "io.kotest", name = "kotest-assertions-core", version.ref = "kotest" }
 kotest-runner = { group = "io.kotest", name = "kotest-runner-junit5", version.ref = "kotest" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+mockkAndroid = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
