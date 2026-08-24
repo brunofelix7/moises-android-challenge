@@ -4,6 +4,8 @@
     <string name="now_playing">Now playing</string>
     <string name="view_album">View album</string>
     <string name="search">Search</string>
+    <string name="retry">Retry</string>
+    <string name="cancel">Cancel</string>
 
     <!-- Empty state messages -->
     <string name="empty_state_title">No recent songs</string>
