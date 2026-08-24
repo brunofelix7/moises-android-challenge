@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Moises Challenge</string>
+    <string name="songs">Songs</string>
+    <string name="now_playing">Now playing</string>
+    <string name="view_album">View album</string>
+    <string name="search">Search</string>
+
+    <!-- Empty state messages -->
+    <string name="empty_state_title">No recent songs</string>
+    <string name="empty_state_body">Start exploring! Search for your favorite tracks and they will appear right here</string>
 </resources>
