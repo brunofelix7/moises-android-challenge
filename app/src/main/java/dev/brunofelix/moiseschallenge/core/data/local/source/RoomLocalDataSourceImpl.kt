@@ -18,6 +18,12 @@ class RoomLocalDataSourceImpl @Inject constructor(
         }
     }
 
+    override fun observeSongById(id: Long): Flow<Song?> {
+        return dao.getById(id).map { entity ->
+            entity?.toDomain()
+        }
+    }
+
     override suspend fun saveRecentSong(song: Song): Long {
         return dao.insert(song.toEntity())
     }
