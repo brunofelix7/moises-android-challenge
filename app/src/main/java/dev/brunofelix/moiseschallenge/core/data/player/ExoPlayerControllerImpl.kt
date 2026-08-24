@@ -4,12 +4,12 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import dev.brunofelix.moiseschallenge.core.di.MainScope
 import dev.brunofelix.moiseschallenge.core.domain.model.Song
 import dev.brunofelix.moiseschallenge.core.domain.player.PlayerController
 import dev.brunofelix.moiseschallenge.core.domain.player.PlayerRepeatMode
 import dev.brunofelix.moiseschallenge.core.domain.player.PlayerState
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,8 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
 class ExoPlayerControllerImpl @Inject constructor(
-    private val exoPlayer: ExoPlayer
+    private val exoPlayer: ExoPlayer,
+    @MainScope private val coroutineScope: CoroutineScope
 ) : PlayerController {
 
     private val _playerState = MutableStateFlow<PlayerState>(PlayerState.Idle)
@@ -35,7 +36,6 @@ class ExoPlayerControllerImpl @Inject constructor(
     private val _repeatMode = MutableStateFlow(PlayerRepeatMode.OFF)
     override val repeatMode = _repeatMode.asStateFlow()
 
-    private val scope = CoroutineScope(Dispatchers.Main + Job())
     private var progressJob: Job? = null
 
     init {
@@ -109,6 +109,11 @@ class ExoPlayerControllerImpl @Inject constructor(
         }
     }
 
+    override fun release() {
+        stopProgressTracker()
+        exoPlayer.release()
+    }
+
     private fun updatePlayerState() {
         val state = when (exoPlayer.playbackState) {
             Player.STATE_IDLE -> PlayerState.Idle
@@ -124,7 +129,7 @@ class ExoPlayerControllerImpl @Inject constructor(
 
     private fun startProgressTracker() {
         progressJob?.cancel()
-        progressJob = scope.launch {
+        progressJob = coroutineScope.launch {
             while (isActive) {
                 _currentPosition.value = exoPlayer.currentPosition
                 delay(500.milliseconds)
