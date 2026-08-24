@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.dp
 
 val spacing16 = 16.dp
 val spacing18 = 18.dp
+val spacing24 = 24.dp
 val extraSmallSpacing = 4.dp
 val smallSpacing = 8.dp
 val mediumSpacing = 12.dp
