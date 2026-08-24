@@ -30,4 +30,13 @@ interface SongDao {
      */
     @Query("SELECT * FROM recent_songs ORDER BY playedAt DESC LIMIT 50")
     fun getRecentSongs(): Flow<List<SongEntity>>
+
+    /**
+     * Retrieves a specific song by its ID from the 'recent_songs' table.
+     *
+     * @param id The ID of the song to retrieve.
+     * @return A flow emitting the requested song, or null if not found.
+     */
+    @Query("SELECT * FROM recent_songs WHERE id = :id LIMIT 1")
+    fun getById(id: Long): Flow<SongEntity?>
 }
