@@ -45,7 +45,7 @@ class SongViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    private val _state = MutableStateFlow(SongsUiState())
+    private val _state = MutableStateFlow(SongUiState())
     val state = _state.asStateFlow()
 
     private val pageSize = 20
