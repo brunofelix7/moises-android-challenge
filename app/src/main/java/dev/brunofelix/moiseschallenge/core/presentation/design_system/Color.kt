@@ -1,4 +1,4 @@
-package dev.brunofelix.moiseschallenge.core.presentation.ui.design_system
+package dev.brunofelix.moiseschallenge.core.presentation.design_system
 
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.ui.graphics.Color
