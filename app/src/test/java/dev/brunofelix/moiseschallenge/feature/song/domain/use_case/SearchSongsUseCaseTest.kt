@@ -38,7 +38,7 @@ class SearchSongsUseCaseTest : DescribeSpec({
                     )
                 )
                 val query = "linkin park"
-                coEvery { repository.search(query) } returns Resource.Success(mockSongs)
+                coEvery { repository.search(query, 20, 0) } returns Resource.Success(mockSongs)
 
                 // Act
                 val result = useCase(query)
@@ -46,7 +46,7 @@ class SearchSongsUseCaseTest : DescribeSpec({
                 // Assert
                 result.shouldBeTypeOf<Resource.Success<List<Song>>>()
                 result.data shouldBe mockSongs
-                coVerify(exactly = 1) { repository.search(query) }
+                coVerify(exactly = 1) { repository.search(query, 20, 0) }
             }
         }
 
@@ -54,7 +54,7 @@ class SearchSongsUseCaseTest : DescribeSpec({
             it("should return a Resource.Success containing an empty list") {
                 // Arrange
                 val query = "unknown artist"
-                coEvery { repository.search(query) } returns Resource.Success(emptyList())
+                coEvery { repository.search(query, 20, 0) } returns Resource.Success(emptyList())
 
                 // Act
                 val result = useCase(query)
@@ -62,7 +62,7 @@ class SearchSongsUseCaseTest : DescribeSpec({
                 // Assert
                 result.shouldBeTypeOf<Resource.Success<List<Song>>>()
                 result.data shouldBe emptyList()
-                coVerify(exactly = 1) { repository.search(query) }
+                coVerify(exactly = 1) { repository.search(query, 20, 0) }
             }
         }
 
@@ -71,7 +71,7 @@ class SearchSongsUseCaseTest : DescribeSpec({
                 // Arrange
                 val query = "linkin park"
                 val expectedError = RemoteException.NoInternet()
-                coEvery { repository.search(query) } returns Resource.Error(expectedError)
+                coEvery { repository.search(query, 20, 0) } returns Resource.Error(expectedError)
 
                 // Act
                 val result = useCase(query)
@@ -79,7 +79,7 @@ class SearchSongsUseCaseTest : DescribeSpec({
                 // Assert
                 result.shouldBeTypeOf<Resource.Error>()
                 result.throwable shouldBe expectedError
-                coVerify(exactly = 1) { repository.search(query) }
+                coVerify(exactly = 1) { repository.search(query, 20, 0) }
             }
         }
     }

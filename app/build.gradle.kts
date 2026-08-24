@@ -13,7 +13,6 @@ android {
             minorApiLevel = 1
         }
     }
-
     defaultConfig {
         applicationId = "dev.brunofelix.moiseschallenge"
         minSdk = 26
@@ -23,7 +22,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
             optimization {
@@ -37,8 +35,8 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
-
     testOptions {
         unitTests.all {
             it.useJUnitPlatform()
@@ -119,6 +117,7 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.kotest)
     testImplementation(libs.kotest.runner)
+    testImplementation(libs.mockwebserver)
     testImplementation(libs.robolectric)
     testImplementation(libs.arch.core.testing)
     testImplementation(libs.jetbrains.kotlinx.coroutines.core)
@@ -132,6 +131,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.truth)
+    androidTestImplementation(libs.kotest)
+    androidTestImplementation(libs.mockkAndroid)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.android.compiler)
 

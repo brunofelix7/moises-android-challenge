@@ -30,7 +30,7 @@ class SaveRecentSongUseCaseTest : DescribeSpec({
                 durationMillis = 180000L,
                 albumId = 10
             )
-            coEvery { repository.saveRecent(mockSong) } returns Unit
+            coEvery { repository.saveRecent(mockSong) } returns 1L
 
             // Act
             useCase(mockSong)

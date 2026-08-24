@@ -52,4 +52,9 @@ interface PlayerController {
      * Toggles the repeat mode between ON and OFF.
      */
     fun toggleRepeatMode()
+
+    /**
+     * Releases the player and any associated resources.
+     */
+    fun release()
 }
