@@ -15,6 +15,8 @@ val sliderDarkGrayColor = Color(0x40FFFFFF)
 val sliderLightGrayColor = Color(0x99FFFFFF)
 val infoGrayColor = Color(0xFF545454)
 val greenColor = Color(0xFF0086A0)
+val shimmerColorPrimary = Color(0xFF1A1B1B)
+val shimmerColorSecondary = Color(0xFF2B2B2B)
 
 val appColorScheme = darkColorScheme(
     primary = primaryColor,
