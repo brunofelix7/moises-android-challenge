@@ -11,6 +11,8 @@
     <string name="previous">Previous</string>
     <string name="next">Next</string>
     <string name="repeat">Repeat</string>
+    <string name="song_name">Song name</string>
+    <string name="artist_name">Artist name</string>
 
     <!-- Empty state messages -->
     <string name="empty_state_title">No recent songs</string>
