@@ -11,6 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,16 +25,19 @@ import dev.brunofelix.moiseschallenge.core.domain.model.Song
 import dev.brunofelix.moiseschallenge.core.domain.player.PlayerRepeatMode
 import dev.brunofelix.moiseschallenge.core.domain.player.PlayerState
 import dev.brunofelix.moiseschallenge.core.presentation.components.AppTopBar
+import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerControls
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerCover
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerInfo
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerSkeleton
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerSlider
+import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SongActionSheet
 
 @Composable
 internal fun PlayerRoute(
     songId: Long,
+    onNavigate: (Route) -> Unit,
     onBack: () -> Unit,
     viewModel: PlayerViewModel = hiltViewModel()
 ) {
@@ -40,6 +46,8 @@ internal fun PlayerRoute(
     val currentPosition by viewModel.currentPosition.collectAsStateWithLifecycle(initialValue = 0L)
     val duration by viewModel.duration.collectAsStateWithLifecycle(initialValue = 0L)
     val isRepeatEnabled by viewModel.repeatMode.collectAsStateWithLifecycle(initialValue = PlayerRepeatMode.OFF)
+
+    var isSheetVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(songId) {
         viewModel.init(songId)
@@ -57,6 +65,7 @@ internal fun PlayerRoute(
         currentPosition = currentPosition,
         totalDuration = duration,
         isRepeatEnabled = isRepeatEnabled == PlayerRepeatMode.ONE,
+        isSheetVisible = isSheetVisible,
         onBack = onBack,
         onPlayPauseClick = {
             if (isPlaying == PlayerState.Playing) viewModel.pause() else viewModel.resume()
@@ -64,7 +73,15 @@ internal fun PlayerRoute(
         onPreviousClick = viewModel::moveBackward,
         onNextClick = viewModel::moveForward,
         onSeek = { position -> viewModel.seekTo(position.toLong()) },
-        onRepeatClick = viewModel::toggleRepeatMode
+        onRepeatClick = viewModel::toggleRepeatMode,
+        onActionClick = { isSheetVisible = true },
+        onDismissSheet = { isSheetVisible = false },
+        onViewAlbumClick = {
+            isSheetVisible = false
+            song?.albumId?.let { albumId ->
+                onNavigate(Route.Album(albumId))
+            }
+        }
     )
 }
 
@@ -75,12 +92,16 @@ internal fun PlayerScreen(
     currentPosition: Long,
     totalDuration: Long,
     isRepeatEnabled: Boolean,
+    isSheetVisible: Boolean,
     onBack: () -> Unit,
     onPlayPauseClick: () -> Unit,
     onPreviousClick: () -> Unit,
     onNextClick: () -> Unit,
     onSeek: (Float) -> Unit,
     onRepeatClick: () -> Unit,
+    onActionClick: () -> Unit,
+    onDismissSheet: () -> Unit,
+    onViewAlbumClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -92,7 +113,7 @@ internal fun PlayerScreen(
                 titleStyle = MaterialTheme.typography.titleSmall,
                 actionIcon = R.drawable.ic_more,
                 onBack = onBack,
-                onAction = {}
+                onAction = onActionClick
             )
         }
     ) { innerPadding ->
@@ -119,10 +140,19 @@ internal fun PlayerScreen(
             }
         }
     }
+
+    if (isSheetVisible && song != null) {
+        SongActionSheet(
+            songName = song.title,
+            artistName = song.artist,
+            onDismiss = onDismissSheet,
+            onViewAlbumClick = onViewAlbumClick
+        )
+    }
 }
 
 @Composable
-fun PlayerContent(
+internal fun PlayerContent(
     song: Song,
     isPlaying: Boolean,
     currentPosition: Long,
@@ -173,13 +203,17 @@ private fun LoadingPreview() {
             isPlaying = false,
             currentPosition = 0L,
             totalDuration = 0L,
+            isRepeatEnabled = false,
+            isSheetVisible = false,
             onBack = {},
             onPlayPauseClick = {},
             onPreviousClick = {},
             onNextClick = {},
             onSeek = {},
-            isRepeatEnabled = false,
-            onRepeatClick = {}
+            onRepeatClick = {},
+            onActionClick = {},
+            onDismissSheet = {},
+            onViewAlbumClick = {}
         )
     }
 }
@@ -197,13 +231,17 @@ private fun PlayingPreview() {
             isPlaying = true,
             currentPosition = 86000L,
             totalDuration = 260000L,
+            isRepeatEnabled = false,
+            isSheetVisible = false,
             onBack = {},
             onPlayPauseClick = {},
             onPreviousClick = {},
             onNextClick = {},
             onSeek = {},
-            isRepeatEnabled = false,
-            onRepeatClick = {}
+            onRepeatClick = {},
+            onActionClick = {},
+            onDismissSheet = {},
+            onViewAlbumClick = {}
         )
     }
 }
