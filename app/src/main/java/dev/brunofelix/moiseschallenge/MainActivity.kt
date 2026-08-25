@@ -12,11 +12,17 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowInsetsControllerCompat
 import dagger.hilt.android.AndroidEntryPoint
+import dev.brunofelix.moiseschallenge.core.domain.player.PlayerController
 import dev.brunofelix.moiseschallenge.core.presentation.MoisesApp
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var playerController: PlayerController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
@@ -36,5 +42,10 @@ class MainActivity : ComponentActivity() {
                 MoisesApp()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        playerController.release()
     }
 }
