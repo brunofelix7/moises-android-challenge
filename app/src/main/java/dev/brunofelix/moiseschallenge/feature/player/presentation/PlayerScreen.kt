@@ -32,7 +32,7 @@ import dev.brunofelix.moiseschallenge.feature.player.presentation.components.Pla
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerInfo
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerSkeleton
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerSlider
-import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SongActionSheet
+import dev.brunofelix.moiseschallenge.core.presentation.components.SongActionSheet
 
 @Composable
 internal fun PlayerRoute(

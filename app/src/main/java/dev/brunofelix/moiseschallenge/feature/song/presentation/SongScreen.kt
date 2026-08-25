@@ -31,7 +31,7 @@ import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
 import dev.brunofelix.moiseschallenge.feature.song.presentation.components.RecentSongsContent
 import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SearchOverlay
-import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SongActionSheet
+import dev.brunofelix.moiseschallenge.core.presentation.components.SongActionSheet
 import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SongTopBar
 import kotlinx.coroutines.flow.flowOf
 
