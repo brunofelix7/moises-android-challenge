@@ -35,6 +35,7 @@ fun AppStateMessage(
     icon: ImageVector,
     title: String,
     subtitle: String,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Center,
     onRetry: (() -> Unit)? = null
 ) {
     Column(
@@ -42,7 +43,7 @@ fun AppStateMessage(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(extraLargeSpacing),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = verticalArrangement,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
@@ -51,7 +52,7 @@ fun AppStateMessage(
             modifier = Modifier.size(72.dp),
             tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
         )
-        Spacer(modifier = Modifier.height(spacing16))
+        Spacer(modifier = Modifier.height(smallSpacing))
         Text(
             text = title,
             style = MaterialTheme.typography.titleSmall,
