@@ -1,0 +1,136 @@
+package dev.brunofelix.moiseschallenge.feature.song.presentation.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import dev.brunofelix.moiseschallenge.R
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.extraSmallSpacing
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.sheetBackgroundColor
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.spacing16
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.spacing24
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SongActionSheet(
+    modifier: Modifier = Modifier,
+    songName: String = "Song name",
+    artistName: String = "Artist name",
+    onDismiss: () -> Unit,
+    onViewAlbumClick: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        modifier = modifier,
+        containerColor = sheetBackgroundColor,
+        shape = RoundedCornerShape(topStart = spacing16, topEnd = spacing16),
+        dragHandle = { ActionSheetDragHandle() }
+    ) {
+        SongActionContent(
+            songName = songName,
+            artistName = artistName,
+            onViewAlbumClick = onViewAlbumClick
+        )
+    }
+}
+
+@Composable
+private fun SongActionContent(
+    modifier: Modifier = Modifier,
+    songName: String,
+    artistName: String,
+    onViewAlbumClick: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 41.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = songName,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(extraSmallSpacing))
+        Text(
+            text = artistName,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(18.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .clickable { onViewAlbumClick() }
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_setlist),
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(spacing24)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = "View album",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@Composable
+private fun ActionSheetDragHandle() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp, bottom = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .width(56.dp)
+                .height(5.dp)
+                .background(Color(0xFF555555), CircleShape)
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xCC262626)
+@Composable
+private fun SongActionSheetPreview() {
+    AppTheme {
+        SongActionContent(
+            songName = "Song name",
+            artistName = "Artist name",
+            onViewAlbumClick = {}
+        )
+    }
+}
