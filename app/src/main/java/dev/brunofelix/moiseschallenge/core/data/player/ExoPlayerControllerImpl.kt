@@ -79,8 +79,8 @@ class ExoPlayerControllerImpl @Inject constructor(
     }
 
     override fun stop() {
-        exoPlayer.pause()
-        exoPlayer.seekTo(0L)
+        exoPlayer.stop()
+        exoPlayer.clearMediaItems()
         _currentPosition.value = 0L
     }
 
