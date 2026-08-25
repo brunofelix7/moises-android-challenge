@@ -34,7 +34,7 @@ internal fun PlayerCover(
             model = coverUrl.toItunesImageSize(500),
             contentDescription = null,
             placeholder = ColorPainter(shimmerColorSecondary),
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Fit,
             alignment = Alignment.Center,
             modifier = Modifier
                 .width(264.dp)
