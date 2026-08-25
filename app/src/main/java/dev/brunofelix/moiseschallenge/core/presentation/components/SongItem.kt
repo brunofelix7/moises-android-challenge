@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -30,6 +31,7 @@ import dev.brunofelix.moiseschallenge.core.domain.util.extension.toItunesImageSi
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.extraSmallSpacing
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.infoGrayColor
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.shimmerColorSecondary
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.smallSpacing
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.spacing16
 
@@ -51,6 +53,7 @@ fun SongItem(
         AsyncImage(
             model = song.coverUrl.toItunesImageSize(60),
             contentDescription = null,
+            placeholder = ColorPainter(shimmerColorSecondary),
             modifier = Modifier
                 .size(52.dp)
                 .clip(RoundedCornerShape(smallSpacing)),
