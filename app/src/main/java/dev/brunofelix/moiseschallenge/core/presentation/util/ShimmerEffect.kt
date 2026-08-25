@@ -13,9 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.shimmerColorPrimary
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.shimmerColorSecondary
 
 fun Modifier.shimmerEffect(): Modifier = composed {
     var size by remember {
@@ -34,9 +35,9 @@ fun Modifier.shimmerEffect(): Modifier = composed {
     background(
         brush = Brush.linearGradient(
             colors = listOf(
-                Color(0xFF1A1B1B),
-                Color(0xFF2B2B2B),
-                Color(0xFF1A1B1B),
+                shimmerColorPrimary,
+                shimmerColorSecondary,
+                shimmerColorPrimary,
             ),
             start = Offset(startOffsetX, 0f),
             end = Offset(startOffsetX + size.width.toFloat(), size.height.toFloat())
