@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 val primaryColor = Color(0xFFFFFFFF)
 val secondaryColor = Color(0xFF737373)
 val backgroundColor = Color(0xFF000000)
-val sheetBackgroundColor = Color(0xCC262626)
+val sheetBackgroundColor = Color(0xFF2C2C2C)
 val searchBarTextColor = Color(0xFFA8A8A8)
 val searchBarIconColor = Color(0x40FFFFFF)
 val searchBarBackgroundColor = Color(0x1AFFFFFF)
