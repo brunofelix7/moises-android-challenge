@@ -39,12 +39,12 @@ interface PlayerController {
     fun seekTo(positionMs: Long)
 
     /**
-     * Skips forward by a fixed amount of time (e.g., 10 seconds).
+     * Skips forward by a fixed amount of time (e.g., 5 seconds).
      */
     fun moveForward()
 
     /**
-     * Skips backward by a fixed amount of time (e.g., 10 seconds).
+     * Skips backward by a fixed amount of time (e.g., 5 seconds).
      */
     fun moveBackward()
 
