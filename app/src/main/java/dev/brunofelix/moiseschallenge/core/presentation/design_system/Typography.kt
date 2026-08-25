@@ -17,6 +17,13 @@ val interFamily = FontFamily(
 )
 
 val appTypography = Typography(
+    headlineMedium = TextStyle(
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        fontFamily = interFamily,
+        lineHeight = 1.2.em,
+        letterSpacing = 0.sp
+    ),
     titleLarge = TextStyle(
         fontSize = 32.sp,
         fontWeight = FontWeight.SemiBold,
@@ -40,6 +47,13 @@ val appTypography = Typography(
     ),
     bodyLarge = TextStyle(
         fontSize = 16.sp,
+        fontWeight = FontWeight.Medium,
+        fontFamily = interFamily,
+        lineHeight = 1.2.em,
+        letterSpacing = 0.sp
+    ),
+    bodyMedium = TextStyle(
+        fontSize = 14.sp,
         fontWeight = FontWeight.Medium,
         fontFamily = interFamily,
         lineHeight = 1.2.em,
