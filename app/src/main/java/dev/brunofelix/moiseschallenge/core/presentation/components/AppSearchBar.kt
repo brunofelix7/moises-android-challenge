@@ -110,10 +110,7 @@ fun AppSearchBar(
                     }
                     if (query.isNotEmpty()) {
                         IconButton(
-                            onClick = {
-                                onQueryChange("")
-                                focusManager.clearFocus()
-                            }
+                            onClick = { onQueryChange("") }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
