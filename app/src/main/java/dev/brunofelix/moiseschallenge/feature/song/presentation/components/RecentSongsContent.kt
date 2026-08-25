@@ -27,7 +27,7 @@ import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
 internal fun RecentSongsContent(
     uiState: UiState<List<Song>>,
     onSongClick: (Song) -> Unit,
-    onAlbumClick: (Long) -> Unit,
+    onAlbumClick: (Song) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -60,7 +60,7 @@ internal fun RecentSongsContent(
                         key = { it.id }) { song ->
                             SongItem(
                                 song = song,
-                                onAction = { song.albumId?.let { id -> onAlbumClick(id) } },
+                                onAction = { song.albumId?.let { id -> onAlbumClick(song) } },
                                 onClick = { onSongClick(song) }
                             )
                     }

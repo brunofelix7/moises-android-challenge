@@ -9,6 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -30,6 +31,7 @@ import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
 import dev.brunofelix.moiseschallenge.feature.song.presentation.components.RecentSongsContent
 import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SearchOverlay
+import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SongActionSheet
 import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SongTopBar
 import kotlinx.coroutines.flow.flowOf
 
@@ -42,6 +44,9 @@ internal fun SongRoute(
     val recentSongsState by viewModel.recentlyPlayedSongs.collectAsStateWithLifecycle()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
     var showSearchBar by remember { mutableStateOf(false) }
+    var isSheetVisible by remember { mutableStateOf(false) }
+    var albumId by remember { mutableLongStateOf(0L) }
+    var selectedSong by remember { mutableStateOf(Song()) }
 
     SongScreen(
         uiState = uiState,
@@ -55,10 +60,26 @@ internal fun SongRoute(
             viewModel.onSongPlayed(song)
             onNavigate(Route.Player(song.id))
         },
-        onAlbumClick = { albumId ->
-            onNavigate(Route.Album(albumId))
+        onAlbumClick = { song ->
+            albumId = song.albumId ?: 0L
+            selectedSong = song
+            isSheetVisible = true
         }
     )
+
+    if (isSheetVisible) {
+        SongActionSheet(
+            songName = selectedSong.title,
+            artistName = selectedSong.artist,
+            onDismiss = {
+                isSheetVisible = false
+            },
+            onViewAlbumClick = {
+                isSheetVisible = false
+                onNavigate(Route.Album(albumId))
+            }
+        )
+    }
 }
 
 @Composable
@@ -72,7 +93,7 @@ internal fun SongScreen(
     onQueryChange: (String) -> Unit = {},
     onRetrySearch: () -> Unit = {},
     onSongClick: (Song) -> Unit = {},
-    onAlbumClick: (Long) -> Unit = {}
+    onAlbumClick: (Song) -> Unit = {}
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -115,9 +136,8 @@ internal fun SongScreen(
                         closeSearch()
                         onSongClick(song)
                     },
-                    onAlbumClick = { albumId ->
-                        closeSearch()
-                        onAlbumClick(albumId)
+                    onAlbumClick = { song ->
+                        onAlbumClick(song)
                     }
                 )
                 SearchOverlay(
@@ -132,9 +152,8 @@ internal fun SongScreen(
                         closeSearch()
                         onSongClick(song)
                     },
-                    onAlbumClick = { albumId ->
-                        closeSearch()
-                        onAlbumClick(albumId)
+                    onAlbumClick = { song ->
+                        onAlbumClick(song)
                     },
                     onRetry = onRetrySearch,
                     modifier = Modifier.zIndex(1f)

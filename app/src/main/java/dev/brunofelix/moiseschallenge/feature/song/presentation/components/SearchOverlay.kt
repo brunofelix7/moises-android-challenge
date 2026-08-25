@@ -50,7 +50,7 @@ internal fun SearchOverlay(
     onQueryChange: (String) -> Unit,
     onClose: () -> Unit,
     onSongClick: (Song) -> Unit,
-    onAlbumClick: (Long) -> Unit,
+    onAlbumClick: (Song) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -118,7 +118,7 @@ internal fun SearchOverlay(
                                 if (song != null) {
                                     SongItem(
                                         song = song,
-                                        onAction = { song.albumId?.let { onAlbumClick(it) } },
+                                        onAction = { song.albumId?.let { onAlbumClick(song) } },
                                         onClick = { onSongClick(song) }
                                     )
                                 }
