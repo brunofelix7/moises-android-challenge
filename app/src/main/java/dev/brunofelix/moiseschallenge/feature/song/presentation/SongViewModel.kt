@@ -54,8 +54,12 @@ class SongViewModel @Inject constructor(
     val searchResults = _state
         .map { it.query }
         .distinctUntilChanged()
-        .onEach { _state.update { it.copy(isLoading = true) } }
         .debounce(500.milliseconds)
+        .onEach { query ->
+            if (query.isNotBlank()) {
+                _state.update { it.copy(isLoading = true) }
+            }
+        }
         .flatMapLatest { query ->
             if (query.isBlank()) {
                 _state.update { it.copy(isLoading = false) }
@@ -84,16 +88,24 @@ class SongViewModel @Inject constructor(
      * @param query The new query value.
      */
     fun onQueryChange(query: String) {
-        _state.update { it.copy(query = query) }
+        _state.update {
+            it.copy(
+                query = query,
+                isLoading = if (query.isBlank()) false else it.isLoading
+            )
+        }
     }
 
     /**
-     * Saves the played song to the database.
+     * Saves the played song to the database if not already present.
      * @param song The song that was played.
      */
     fun onSongPlayed(song: Song) {
         viewModelScope.launch {
-            saveRecentSongUseCase(song)
+            val alreadySaved = recentlyPlayedSongs.value.any { it.id == song.id }
+            if (!alreadySaved) {
+                saveRecentSongUseCase(song)
+            }
         }
     }
 }
