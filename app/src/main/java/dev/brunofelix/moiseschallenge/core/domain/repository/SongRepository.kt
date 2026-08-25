@@ -15,10 +15,9 @@ interface SongRepository {
      *
      * @param term The search term.
      * @param limit The maximum number of results to return.
-     * @param offset The index of the first result to return.
      * @return A [Resource] containing the search results.
      */
-    suspend fun search(term: String, limit: Int, offset: Int): Resource<List<Song>>
+    suspend fun search(term: String, limit: Int): Resource<List<Song>>
 
     /**
      * Saves a song to the local database and marks it as recently played.

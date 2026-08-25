@@ -20,15 +20,13 @@ interface ITunesApi {
      * @param term The search term.
      * @param entity The type of results to return. Defaults to "song".
      * @param limit The maximum number of results to return. Defaults to 20.
-     * @param offset The index of the first result to return. Defaults to 0.
      * @return A [SearchResponseDto] containing the search results.
      */
     @GET("search")
     suspend fun search(
         @Query("term") term: String,
         @Query("entity") entity: String = "song",
-        @Query("limit") limit: Int = 20,
-        @Query("offset") offset: Int = 0
+        @Query("limit") limit: Int = 20
     ): Response<SearchResponseDto>
 
     /**

@@ -15,25 +15,16 @@ interface SearchSongsUseCase {
      *
      * @param query The search query.
      * @param limit The maximum number of results to return.
-     * @param offset The index of the first result to return.
      * @return A Resource containing the List<Song> or an error.
      */
-    suspend operator fun invoke(
-        query: String,
-        limit: Int = 20,
-        offset: Int = 0
-    ): Resource<List<Song>>
+    suspend operator fun invoke(query: String, limit: Int = 20): Resource<List<Song>>
 }
 
 class SearchSongsUseCaseImpl @Inject constructor(
     private val repository: SongRepository
 ): SearchSongsUseCase {
 
-    override suspend fun invoke(
-        query: String,
-        limit: Int,
-        offset: Int
-    ): Resource<List<Song>> {
-        return repository.search(query, limit, offset)
+    override suspend fun invoke(query: String, limit: Int): Resource<List<Song>> {
+        return repository.search(query, limit)
     }
 }

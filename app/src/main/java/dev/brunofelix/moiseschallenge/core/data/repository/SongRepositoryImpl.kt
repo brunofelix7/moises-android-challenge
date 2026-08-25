@@ -14,8 +14,8 @@ class SongRepositoryImpl @Inject constructor(
     private val localDataSource: SongLocalDataSource
 ) : SongRepository {
 
-    override suspend fun search(term: String, limit: Int, offset: Int): Resource<List<Song>> {
-        return remoteDataSource.search(term, limit, offset).toResource()
+    override suspend fun search(term: String, limit: Int): Resource<List<Song>> {
+        return remoteDataSource.search(term, limit).toResource()
     }
 
     override suspend fun saveRecent(song: Song): Long {

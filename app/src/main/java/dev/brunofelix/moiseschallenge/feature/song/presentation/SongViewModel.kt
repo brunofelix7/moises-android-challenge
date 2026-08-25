@@ -65,7 +65,7 @@ class SongViewModel @Inject constructor(
                 _state.update { it.copy(isLoading = false) }
                 flowOf(PagingData.empty())
             } else {
-                val result = searchSongsUseCase(query = query, limit = maxSearchResults, offset = 0)
+                val result = searchSongsUseCase(query, maxSearchResults)
                 val songs = result.fold(
                     onSuccess = { it },
                     onFailure = { emptyList() }

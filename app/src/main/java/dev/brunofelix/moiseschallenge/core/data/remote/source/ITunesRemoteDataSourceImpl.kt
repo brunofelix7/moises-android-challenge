@@ -14,9 +14,9 @@ class ITunesRemoteDataSourceImpl @Inject constructor(
     api: ITunesApi
 ) : BaseRemoteDataSource<ITunesApi>(api), SongRemoteDataSource {
 
-    override suspend fun search(term: String, limit: Int, offset: Int): Result<List<Song>> {
+    override suspend fun search(term: String, limit: Int): Result<List<Song>> {
         return safeApiCall(
-            call = { search(term = term, limit = limit, offset = offset) },
+            call = { search(term = term, limit = limit) },
             transform = { dto ->
                 dto.results.filterIsInstance<SongDto>().map { it.toDomain() }
             }

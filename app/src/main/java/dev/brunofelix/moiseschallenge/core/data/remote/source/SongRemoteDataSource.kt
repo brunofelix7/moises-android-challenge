@@ -12,10 +12,9 @@ interface SongRemoteDataSource {
      *
      * @param term The search term.
      * @param limit The maximum number of results to return.
-     * @param offset The index of the first result to return.
      * @return A [Result] containing the search results.
      */
-    suspend fun search(term: String, limit: Int, offset: Int): Result<List<Song>>
+    suspend fun search(term: String, limit: Int): Result<List<Song>>
 
     /**
      * Retrieves the details of an album and its respective tracks using the ID.
