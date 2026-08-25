@@ -17,10 +17,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigationevent.NavigationEventDispatcher
 import androidx.navigationevent.NavigationEventDispatcherOwner
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.navigation.NavigationGraph
 import dev.brunofelix.moiseschallenge.core.presentation.navigation.NavigationViewModel
 import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
-import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 
 @Composable
 fun MoisesApp(
@@ -54,9 +54,6 @@ fun MoisesAppContent(
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
             .fillMaxSize(),
-        topBar = {
-            // add top bar
-        },
         content = { innerPadding ->
             NavigationGraph(
                 backStack = backStack,
