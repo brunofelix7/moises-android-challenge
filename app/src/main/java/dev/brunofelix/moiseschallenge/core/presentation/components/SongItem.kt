@@ -37,10 +37,11 @@ import dev.brunofelix.moiseschallenge.core.presentation.design_system.spacing16
 
 @Composable
 fun SongItem(
+    modifier: Modifier = Modifier,
     song: Song,
-    onClick: () -> Unit,
-    onAction: () -> Unit,
-    modifier: Modifier = Modifier
+    isActionVisible: Boolean = true,
+    onClick: () -> Unit = {},
+    onAction: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
@@ -57,7 +58,7 @@ fun SongItem(
             modifier = Modifier
                 .size(52.dp)
                 .clip(RoundedCornerShape(smallSpacing)),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Fit
         )
         Spacer(modifier = Modifier.width(spacing16))
         Column(
@@ -79,15 +80,17 @@ fun SongItem(
                 overflow = TextOverflow.Ellipsis
             )
         }
-        IconButton(
-            onClick = onAction,
-            modifier = Modifier.padding(start = 8.dp)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_more),
-                tint = infoGrayColor,
-                contentDescription = null
-            )
+        if (isActionVisible) {
+            IconButton(
+                onClick = onAction,
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_more),
+                    tint = infoGrayColor,
+                    contentDescription = null
+                )
+            }
         }
     }
 }
