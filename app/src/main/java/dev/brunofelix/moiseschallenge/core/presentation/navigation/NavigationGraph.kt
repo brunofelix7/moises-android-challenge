@@ -1,6 +1,5 @@
 package dev.brunofelix.moiseschallenge.core.presentation.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -18,7 +17,6 @@ fun NavigationGraph(
     onNavigate: (Route) -> Unit,
     onNavigateNext: (Route) -> Unit,
     onBack: () -> Unit,
-    paddingValues: PaddingValues,
     modifier: Modifier = Modifier
 ) {
     val entryProvider = entryProvider {
@@ -29,10 +27,10 @@ fun NavigationGraph(
         songNavEntry(onNavigate)
 
         // Player screen
-        playerNavEntry(onBack)
+        playerNavEntry(onNavigate, onBack)
 
         // Album screen
-        albumNavEntry(onNavigate, paddingValues)
+        albumNavEntry(onNavigate, onBack)
     }
 
     NavDisplay(

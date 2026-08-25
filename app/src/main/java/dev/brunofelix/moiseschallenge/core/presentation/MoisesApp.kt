@@ -1,5 +1,6 @@
 package dev.brunofelix.moiseschallenge.core.presentation
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +39,7 @@ fun MoisesApp(
     )
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoisesAppContent(
@@ -54,13 +56,12 @@ fun MoisesAppContent(
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
             .fillMaxSize(),
-        content = { innerPadding ->
+        content = {
             NavigationGraph(
                 backStack = backStack,
                 onNavigate = onNavigate,
                 onNavigateNext = onNavigateNext,
-                onBack = onBack,
-                paddingValues = innerPadding
+                onBack = onBack
             )
         }
     )
