@@ -32,7 +32,7 @@ class ITunesRemoteDataSourceImplTest : DescribeSpec({
                 coEvery { api.search("term", "song", 20) } returns Response.success(responseDto)
 
                 // Act
-                val result = dataSource.search("term", 20, 0)
+                val result = dataSource.search("term", 20)
 
                 // Assert
                 result.isSuccess shouldBe true
@@ -48,7 +48,7 @@ class ITunesRemoteDataSourceImplTest : DescribeSpec({
                 coEvery { api.search(any(), any(), any()) } returns Response.error(404, "".toResponseBody())
 
                 // Act
-                val result = dataSource.search("term", 20, 0)
+                val result = dataSource.search("term", 20)
 
                 // Assert
                 result.isFailure shouldBe true

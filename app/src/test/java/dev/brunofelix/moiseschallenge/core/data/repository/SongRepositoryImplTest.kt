@@ -31,10 +31,10 @@ class SongRepositoryImplTest : DescribeSpec({
             it("should return success resource") {
                 // Arrange
                 val songs = listOf(mockk<Song>())
-                coEvery { remoteDataSource.search("term", 20, 0) } returns Result.success(songs)
+                coEvery { remoteDataSource.search("term", 20) } returns Result.success(songs)
 
                 // Act
-                val result = repository.search("term", 20, 0)
+                val result = repository.search("term", 20)
 
                 // Assert
                 result.shouldBeTypeOf<Resource.Success<List<Song>>>()
@@ -46,10 +46,10 @@ class SongRepositoryImplTest : DescribeSpec({
             it("should return error resource") {
                 // Arrange
                 val exception = RemoteException.NoInternet()
-                coEvery { remoteDataSource.search("term", 20, 0) } returns Result.failure(exception)
+                coEvery { remoteDataSource.search("term", 20) } returns Result.failure(exception)
 
                 // Act
-                val result = repository.search("term", 20, 0)
+                val result = repository.search("term", 20)
 
                 // Assert
                 result.shouldBeTypeOf<Resource.Error>()
