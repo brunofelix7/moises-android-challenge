@@ -19,4 +19,6 @@
     <string name="empty_state_body">Start exploring! Search for your favorite tracks and they will appear right here</string>
     <string name="search_no_results_title">No results found</string>
     <string name="search_no_results_body">Try searching for something else</string>
+    <string name="album_no_album_title">No album found</string>
+    <string name="album_no_album_body">The album you requested could not be found. Try searching for another album</string>
 </resources>
