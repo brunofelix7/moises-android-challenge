@@ -1,15 +1,18 @@
 package dev.brunofelix.moiseschallenge.feature.album.presentation
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
 
 fun EntryProviderScope<NavKey>.albumNavEntry(
     onNavigate: (Route) -> Unit,
-    paddingValues: PaddingValues
+    onBack: () -> Unit
 ) {
     entry<Route.Album> {
-        // AlbumRoute
+        AlbumRoute(
+            albumId = it.albumId,
+            onNavigate = onNavigate,
+            onBack = onBack
+        )
     }
 }
