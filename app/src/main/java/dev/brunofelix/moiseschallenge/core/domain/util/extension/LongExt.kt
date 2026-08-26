@@ -25,3 +25,9 @@ fun Long.toSafeSliderRange(): ClosedFloatingPointRange<Float> {
     val endValue = this.takeIf { it > 0 }?.toFloat() ?: 100f
     return 0f..endValue
 }
+
+/**
+ * Converts a value to megabits (binary megabytes) in bytes.
+ * Example: 100L.toMegabits() = 100 * 1024 * 1024L
+ */
+fun Long.toMegabits(): Long = this * 1024 * 1024
