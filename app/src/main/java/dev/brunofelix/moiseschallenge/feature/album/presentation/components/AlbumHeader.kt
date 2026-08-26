@@ -12,17 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import dev.brunofelix.moiseschallenge.core.domain.model.Album
 import dev.brunofelix.moiseschallenge.core.domain.util.extension.toItunesImageSize
+import dev.brunofelix.moiseschallenge.core.presentation.components.AppAsyncImage
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.extraSmallSpacing
-import dev.brunofelix.moiseschallenge.core.presentation.design_system.shimmerColorSecondary
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.spacing24
 
 @Composable
@@ -34,12 +31,9 @@ internal fun AlbumHeader(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AsyncImage(
+        AppAsyncImage(
             model = album.coverUrl.toItunesImageSize(200),
             contentDescription = null,
-            placeholder = ColorPainter(shimmerColorSecondary),
-            error = ColorPainter(shimmerColorSecondary),
-            contentScale = ContentScale.Fit,
             modifier = Modifier
                 .size(120.dp)
                 .clip(MaterialTheme.shapes.large)

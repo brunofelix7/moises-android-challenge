@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.brunofelix.moiseschallenge.R
@@ -54,6 +55,9 @@ internal fun AlbumRoute(
     AlbumScreen(
         uiState = uiState,
         onBack = onBack,
+        onLoadAlbum = {
+            viewModel.loadAlbum(albumId)
+        },
         onTrackClick = { song ->
             viewModel.onTrackPlayed(song)
             onReplace(Route.Player(song.id))
@@ -65,6 +69,7 @@ internal fun AlbumRoute(
 internal fun AlbumScreen(
     uiState: UiState<Album>,
     onBack: () -> Unit,
+    onLoadAlbum: () -> Unit,
     onTrackClick: (Song) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -108,7 +113,8 @@ internal fun AlbumScreen(
                     icon = Icons.Rounded.ErrorOutline,
                     title = stringResource(R.string.error_title),
                     subtitle = uiState.uiText.asString(LocalContext.current),
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.padding(innerPadding),
+                    onRetry = onLoadAlbum,
                 )
             }
         }
@@ -134,6 +140,8 @@ private fun AlbumContent(
         items(album.tracks) { track ->
             SongItem(
                 song = track,
+                itemHeight = 60.dp,
+                imageSize = 44.dp,
                 isActionVisible = false,
                 onClick = { onTrackClick(track) }
             )
@@ -149,6 +157,7 @@ private fun LoadingPreview() {
         AlbumScreen(
             uiState = UiState.Loading,
             onBack = {},
+            onLoadAlbum = {},
             onTrackClick = {}
         )
     }
@@ -172,6 +181,7 @@ private fun SuccessPreview() {
                 )
             ),
             onBack = {},
+            onLoadAlbum = {},
             onTrackClick = {}
         )
     }
@@ -184,6 +194,7 @@ private fun EmptyPreview() {
         AlbumScreen(
             uiState = UiState.Empty,
             onBack = {},
+            onLoadAlbum = {},
             onTrackClick = {}
         )
     }
@@ -196,6 +207,7 @@ private fun ErrorPreview() {
         AlbumScreen(
             uiState = UiState.Error(UiText.DynamicString("Could not load album details")),
             onBack = {},
+            onLoadAlbum = {},
             onTrackClick = {}
         )
     }
