@@ -52,8 +52,6 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
-    fun stopPlayback() = playerController.stop()
-
     fun resume() = playerController.resume()
 
     fun pause() = playerController.pause()

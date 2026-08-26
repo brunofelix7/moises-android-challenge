@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,7 +46,6 @@ internal fun PlayerRoute(
     val currentPosition by viewModel.currentPosition.collectAsStateWithLifecycle(initialValue = 0L)
     val duration by viewModel.duration.collectAsStateWithLifecycle(initialValue = 0L)
     val isRepeatEnabled by viewModel.repeatMode.collectAsStateWithLifecycle(initialValue = PlayerRepeatMode.OFF)
-
     var isSheetVisible by remember { mutableStateOf(false) }
 
     BackHandler(enabled = true) {
@@ -56,12 +54,6 @@ internal fun PlayerRoute(
 
     LaunchedEffect(songId) {
         viewModel.init(songId)
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.stopPlayback()
-        }
     }
 
     PlayerScreen(
