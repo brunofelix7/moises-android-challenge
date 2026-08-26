@@ -103,7 +103,8 @@ private fun SliderTrack(
             activeTrackColor = sliderLightGrayColor,
             inactiveTrackColor = sliderDarkGrayColor
         ),
-        thumbTrackGapSize = 0.dp
+        thumbTrackGapSize = 0.dp,
+        drawStopIndicator = null
     )
 }
 
