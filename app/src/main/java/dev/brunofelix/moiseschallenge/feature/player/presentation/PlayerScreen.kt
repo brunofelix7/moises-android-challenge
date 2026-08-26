@@ -37,7 +37,7 @@ import dev.brunofelix.moiseschallenge.feature.player.presentation.components.Pla
 @Composable
 internal fun PlayerRoute(
     songId: Long,
-    onNavigate: (Route) -> Unit,
+    onReplace: (Route) -> Unit,
     onBack: () -> Unit,
     viewModel: PlayerViewModel = hiltViewModel()
 ) {
@@ -76,7 +76,7 @@ internal fun PlayerRoute(
         onViewAlbumClick = {
             isSheetVisible = false
             song?.albumId?.let { albumId ->
-                onNavigate(Route.Album(albumId))
+                onReplace(Route.Album(albumId))
             }
         }
     )

@@ -37,7 +37,7 @@ import dev.brunofelix.moiseschallenge.feature.album.presentation.components.Albu
 @Composable
 internal fun AlbumRoute(
     albumId: Long,
-    onNavigate: (Route) -> Unit,
+    onReplace: (Route) -> Unit,
     onBack: () -> Unit,
     viewModel: AlbumViewModel = hiltViewModel()
 ) {
@@ -55,7 +55,8 @@ internal fun AlbumRoute(
         uiState = uiState,
         onBack = onBack,
         onTrackClick = { song ->
-            onNavigate(Route.Player(song.id))
+            viewModel.onTrackPlayed(song)
+            onReplace(Route.Player(song.id))
         }
     )
 }

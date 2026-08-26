@@ -63,8 +63,4 @@ class PlayerViewModel @Inject constructor(
     fun moveBackward() = playerController.moveBackward()
 
     fun toggleRepeatMode() = playerController.toggleRepeatMode()
-
-    override fun onCleared() {
-        playerController.stop()
-    }
 }

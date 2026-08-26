@@ -33,7 +33,7 @@ fun MoisesApp(
         modifier = modifier,
         backStack = backStack,
         onNavigate = viewModel::navigateTo,
-        onNavigateNext = viewModel::navigateAndPopCurrent,
+        onReplace = viewModel::replaceCurrent,
         onBack = viewModel::popBackStack
     )
 }
@@ -44,7 +44,7 @@ fun MoisesApp(
 fun MoisesAppContent(
     backStack: List<Route>,
     onNavigate: (Route) -> Unit,
-    onNavigateNext: (Route) -> Unit,
+    onReplace: (Route) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -56,7 +56,7 @@ fun MoisesAppContent(
             NavigationGraph(
                 backStack = backStack,
                 onNavigate = onNavigate,
-                onNavigateNext = onNavigateNext,
+                onReplace = onReplace,
                 onBack = onBack
             )
         }
@@ -77,7 +77,7 @@ fun MoisesAppPreview() {
             MoisesAppContent(
                 backStack = listOf(Route.Splash),
                 onNavigate = {},
-                onNavigateNext = {},
+                onReplace = {},
                 onBack = {}
             )
         }

@@ -22,11 +22,11 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 internal fun SplashRoute(
-    onNavigateNext: (Route) -> Unit
+    onReplace: (Route) -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         delay(1500.milliseconds)
-        onNavigateNext(Route.Songs)
+        onReplace(Route.Songs)
     }
     SplashScreen()
 }

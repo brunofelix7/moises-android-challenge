@@ -19,9 +19,9 @@ class NavigationViewModel @Inject constructor() : ViewModel() {
     val backStack = _backStack.asStateFlow()
 
     /**
-     * Navigate to a specific route and pop the current route from the back stack.
+     * Navigate to a specific route and replace the current route in the back stack.
      */
-    fun navigateAndPopCurrent(route: Route) {
+    fun replaceCurrent(route: Route) {
         _backStack.update { currentStack ->
             currentStack.dropLast(1) + route
         }
