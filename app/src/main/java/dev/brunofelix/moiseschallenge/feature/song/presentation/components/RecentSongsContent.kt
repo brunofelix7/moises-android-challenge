@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.LibraryMusic
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -30,6 +33,17 @@ internal fun RecentSongsContent(
     onAlbumClick: (Song) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val listState = rememberLazyListState()
+
+    if (uiState is UiState.Success) {
+        val firstItemId = uiState.data.firstOrNull()?.id
+        LaunchedEffect(firstItemId) {
+            if (firstItemId != null) {
+                listState.animateScrollToItem(0)
+            }
+        }
+    }
+
     Column(modifier = modifier.fillMaxSize()) {
         when (uiState) {
             is UiState.Initial, is UiState.Loading -> {
@@ -54,7 +68,10 @@ internal fun RecentSongsContent(
                 )
             }
             is UiState.Success -> {
-                RecentSongsList(modifier = Modifier.fillMaxSize()) {
+                RecentSongsList(
+                    modifier = Modifier.fillMaxSize(),
+                    listState = listState
+                ) {
                     items(
                         items = uiState.data,
                         key = { it.id }) { song ->
@@ -73,10 +90,12 @@ internal fun RecentSongsContent(
 @Composable
 private fun RecentSongsList(
     modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState(),
     content: LazyListScope.() -> Unit
 ) {
     LazyColumn(
         modifier = modifier.padding(top = spacing16),
+        state = listState,
         contentPadding = PaddingValues(bottom = largeSpacing),
         content = content
     )
