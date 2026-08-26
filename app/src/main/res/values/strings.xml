@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">Moises Challenge</string>
+    <string name="songs">Songs</string>
+    <string name="now_playing">Now playing</string>
+    <string name="view_album">View album</string>
+    <string name="search">Search</string>
+    <string name="retry">Retry</string>
+    <string name="cancel">Cancel</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+    <string name="repeat">Repeat</string>
+    <string name="song_name">Song name</string>
+    <string name="artist_name">Artist name</string>
+
+    <!-- Empty state messages -->
+    <string name="empty_state_title">No recent songs</string>
+    <string name="empty_state_body">Start exploring! Search for your favorite tracks and they will appear right here</string>
+    <string name="search_no_results_title">No results found</string>
+    <string name="search_no_results_body">Try searching for something else</string>
+    <string name="album_no_album_title">No album found</string>
+    <string name="album_no_album_body">The album you requested could not be found. Try searching for another album</string>
 </resources>

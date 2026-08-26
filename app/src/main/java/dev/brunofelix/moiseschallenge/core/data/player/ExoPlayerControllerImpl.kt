@@ -79,8 +79,8 @@ class ExoPlayerControllerImpl @Inject constructor(
     }
 
     override fun stop() {
-        exoPlayer.pause()
-        exoPlayer.seekTo(0L)
+        exoPlayer.stop()
+        exoPlayer.clearMediaItems()
         _currentPosition.value = 0L
     }
 
@@ -90,12 +90,12 @@ class ExoPlayerControllerImpl @Inject constructor(
     }
 
     override fun moveForward() {
-        val targetPosition = (exoPlayer.currentPosition + 10_000).coerceAtMost(exoPlayer.duration)
+        val targetPosition = (exoPlayer.currentPosition + 5_000).coerceAtMost(exoPlayer.duration)
         seekTo(targetPosition)
     }
 
     override fun moveBackward() {
-        val targetPosition = (exoPlayer.currentPosition - 10_000).coerceAtLeast(0)
+        val targetPosition = (exoPlayer.currentPosition - 5_000).coerceAtLeast(0)
         seekTo(targetPosition)
     }
 

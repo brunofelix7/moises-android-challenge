@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_title">Oops!</string>
+    <string name="error_local_database">Your recently songs could not be loaded</string>
+    <string name="error_network_unauthorized">Unauthorized access</string>
+    <string name="error_network_not_found">Song not found</string>
+    <string name="error_network_server">Server error. Please try again later</string>
+    <string name="error_network_no_internet">No internet connection</string>
+    <string name="error_unknown">An unknown error occurred. Please try again later</string>
+</resources>

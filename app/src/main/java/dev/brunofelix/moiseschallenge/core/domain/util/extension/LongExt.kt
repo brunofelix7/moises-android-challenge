@@ -17,3 +17,11 @@ fun Long.toFormattedTime(isRemaining: Boolean = false): String {
     val formatted = String.format(Locale.getDefault(), "%d:%02d", minutes, seconds)
     return if (isRemaining) "-$formatted" else formatted
 }
+
+/**
+ * Ensures a safe range for the Slider, preventing crashes when the duration is zero or null.
+ */
+fun Long.toSafeSliderRange(): ClosedFloatingPointRange<Float> {
+    val endValue = this.takeIf { it > 0 }?.toFloat() ?: 100f
+    return 0f..endValue
+}

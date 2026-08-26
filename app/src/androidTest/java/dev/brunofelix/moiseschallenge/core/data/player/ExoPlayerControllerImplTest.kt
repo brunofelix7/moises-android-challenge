@@ -139,7 +139,7 @@ class ExoPlayerControllerImplTest {
     }
 
     @Test
-    fun test_moveForward_should_increment_position_by_10_seconds() {
+    fun test_moveForward_should_increment_position_by_5_seconds() {
         runBlocking(Dispatchers.Main) {
             // Arrange
             val initialPosition = 5000L
@@ -150,13 +150,13 @@ class ExoPlayerControllerImplTest {
             controller.moveForward()
 
             // Assert
-            verify { exoPlayer.seekTo(initialPosition + 10000L) }
-            controller.currentPosition.value shouldBe (initialPosition + 10000L)
+            verify { exoPlayer.seekTo(initialPosition + 5000L) }
+            controller.currentPosition.value shouldBe (initialPosition + 5000L)
         }
     }
 
     @Test
-    fun test_moveBackward_should_decrement_position_by_10_seconds() {
+    fun test_moveBackward_should_decrement_position_by_5_seconds() {
         runBlocking(Dispatchers.Main) {
             // Arrange
             val initialPosition = 15000L
@@ -166,8 +166,8 @@ class ExoPlayerControllerImplTest {
             controller.moveBackward()
 
             // Assert
-            verify { exoPlayer.seekTo(initialPosition - 10000L) }
-            controller.currentPosition.value shouldBe (initialPosition - 10000L)
+            verify { exoPlayer.seekTo(initialPosition - 5000L) }
+            controller.currentPosition.value shouldBe (initialPosition - 5000L)
         }
     }
 }

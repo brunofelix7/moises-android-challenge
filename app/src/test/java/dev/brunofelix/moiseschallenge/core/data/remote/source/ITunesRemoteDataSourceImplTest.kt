@@ -29,10 +29,10 @@ class ITunesRemoteDataSourceImplTest : DescribeSpec({
                 // Arrange
                 val songDto = SongDto(trackId = 1L, trackName = "Song", artistName = "Artist")
                 val responseDto = SearchResponseDto(resultCount = 1, results = listOf(songDto))
-                coEvery { api.search("term", "song", 20, 0) } returns Response.success(responseDto)
+                coEvery { api.search("term", "song", 20) } returns Response.success(responseDto)
 
                 // Act
-                val result = dataSource.search("term", 20, 0)
+                val result = dataSource.search("term", 20)
 
                 // Assert
                 result.isSuccess shouldBe true
@@ -45,10 +45,10 @@ class ITunesRemoteDataSourceImplTest : DescribeSpec({
         context("when api call fails") {
             it("should return failure result with exception") {
                 // Arrange
-                coEvery { api.search(any(), any(), any(), any()) } returns Response.error(404, "".toResponseBody())
+                coEvery { api.search(any(), any(), any()) } returns Response.error(404, "".toResponseBody())
 
                 // Act
-                val result = dataSource.search("term", 20, 0)
+                val result = dataSource.search("term", 20)
 
                 // Assert
                 result.isFailure shouldBe true
