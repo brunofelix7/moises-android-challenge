@@ -1,5 +1,6 @@
 package dev.brunofelix.moiseschallenge.feature.player.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,14 +26,14 @@ import dev.brunofelix.moiseschallenge.core.domain.model.Song
 import dev.brunofelix.moiseschallenge.core.domain.player.PlayerRepeatMode
 import dev.brunofelix.moiseschallenge.core.domain.player.PlayerState
 import dev.brunofelix.moiseschallenge.core.presentation.components.AppTopBar
-import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
+import dev.brunofelix.moiseschallenge.core.presentation.components.SongActionSheet
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
+import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerControls
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerCover
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerInfo
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerSkeleton
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerSlider
-import dev.brunofelix.moiseschallenge.core.presentation.components.SongActionSheet
 
 @Composable
 internal fun PlayerRoute(
@@ -42,12 +43,16 @@ internal fun PlayerRoute(
     viewModel: PlayerViewModel = hiltViewModel()
 ) {
     val song by viewModel.song.collectAsStateWithLifecycle()
-    val isPlaying by viewModel.playerState.collectAsStateWithLifecycle(initialValue = PlayerState.Playing) // ex: it == PlayerState.PLAYING
+    val isPlaying by viewModel.playerState.collectAsStateWithLifecycle(initialValue = PlayerState.Playing)
     val currentPosition by viewModel.currentPosition.collectAsStateWithLifecycle(initialValue = 0L)
     val duration by viewModel.duration.collectAsStateWithLifecycle(initialValue = 0L)
     val isRepeatEnabled by viewModel.repeatMode.collectAsStateWithLifecycle(initialValue = PlayerRepeatMode.OFF)
 
     var isSheetVisible by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = true) {
+        onBack()
+    }
 
     LaunchedEffect(songId) {
         viewModel.init(songId)

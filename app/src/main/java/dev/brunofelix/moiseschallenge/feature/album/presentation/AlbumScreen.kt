@@ -1,15 +1,6 @@
 package dev.brunofelix.moiseschallenge.feature.album.presentation
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.brunofelix.moiseschallenge.core.domain.model.Album
-import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
-import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
-import dev.brunofelix.moiseschallenge.core.presentation.util.UiText
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,16 +11,26 @@ import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.LibraryMusic
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.brunofelix.moiseschallenge.R
+import dev.brunofelix.moiseschallenge.core.domain.model.Album
 import dev.brunofelix.moiseschallenge.core.domain.model.Song
 import dev.brunofelix.moiseschallenge.core.presentation.components.AppStateMessage
 import dev.brunofelix.moiseschallenge.core.presentation.components.AppTopBar
 import dev.brunofelix.moiseschallenge.core.presentation.components.SongItem
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.extraLargeSpacing
+import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
+import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
+import dev.brunofelix.moiseschallenge.core.presentation.util.UiText
 import dev.brunofelix.moiseschallenge.feature.album.presentation.components.AlbumHeader
 import dev.brunofelix.moiseschallenge.feature.album.presentation.components.AlbumSkeleton
 
@@ -41,6 +42,10 @@ internal fun AlbumRoute(
     viewModel: AlbumViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
+
+    BackHandler(enabled = true) {
+        onBack()
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadAlbum(albumId)

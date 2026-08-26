@@ -1,7 +1,6 @@
 package dev.brunofelix.moiseschallenge.core.presentation
 
 import android.annotation.SuppressLint
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,9 +48,6 @@ fun MoisesAppContent(
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BackHandler(enabled = backStack.size > 1) {
-        onBack()
-    }
     Scaffold(
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
