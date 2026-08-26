@@ -71,6 +71,9 @@ class ExoPlayerControllerImpl @Inject constructor(
     }
 
     override fun resume() {
+        if (exoPlayer.playbackState == Player.STATE_ENDED) {
+            exoPlayer.seekTo(0)
+        }
         exoPlayer.play()
     }
 
@@ -119,7 +122,10 @@ class ExoPlayerControllerImpl @Inject constructor(
             Player.STATE_IDLE -> PlayerState.Idle
             Player.STATE_BUFFERING -> PlayerState.Buffering
             Player.STATE_READY -> if (exoPlayer.isPlaying) PlayerState.Playing else PlayerState.Paused
-            Player.STATE_ENDED -> PlayerState.Ended
+            Player.STATE_ENDED -> {
+                _currentPosition.value = 0L
+                PlayerState.Ended
+            }
             else -> PlayerState.Idle
         }
         _playerState.value = state
