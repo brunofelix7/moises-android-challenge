@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -49,10 +48,9 @@ class SongViewModel @Inject constructor(
             if (songs.isEmpty()) UiState.Empty else UiState.Success(songs)
         }
         .catch { emit(UiState.Error(it.toUiText())) }
-        .onStart { emit(UiState.Loading) }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Lazily,
             initialValue = UiState.Loading
         )
 

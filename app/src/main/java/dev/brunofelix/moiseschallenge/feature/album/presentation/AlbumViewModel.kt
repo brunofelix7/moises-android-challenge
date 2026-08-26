@@ -25,7 +25,13 @@ class AlbumViewModel @Inject constructor(
     private val _state = MutableStateFlow<UiState<Album>>(UiState.Initial)
     val state = _state.asStateFlow()
 
+    private var currentAlbumId: Long? = null
+
     fun loadAlbum(albumId: Long) {
+        if (currentAlbumId == albumId && _state.value is UiState.Success) {
+            return
+        }
+        currentAlbumId = albumId
         viewModelScope.launch {
             _state.update { UiState.Loading }
             when (val result = getAlbumByIdUseCase(albumId)) {
