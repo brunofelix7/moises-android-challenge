@@ -17,6 +17,7 @@ import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SaveRecentSon
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SearchSongsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,6 +44,7 @@ class SongViewModel @Inject constructor(
 ) : ViewModel() {
 
     val recentlyPlayedSongs = getRecentlyPlayedSongsUseCase()
+        .onEach { delay(500.milliseconds) }
         .map { songs ->
             if (songs.isEmpty()) UiState.Empty else UiState.Success(songs)
         }
