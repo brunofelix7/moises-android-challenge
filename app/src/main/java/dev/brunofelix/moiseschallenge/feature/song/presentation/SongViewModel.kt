@@ -17,11 +17,10 @@ import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SaveRecentSon
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SearchSongsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
@@ -30,6 +29,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -47,8 +47,8 @@ class SongViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SongUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _uiEvent = MutableSharedFlow<SongUiEvent>()
-    val uiEvent = _uiEvent.asSharedFlow()
+    private val _uiEvent = Channel<SongUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val pageSize = 20
     private val maxSearchResults = 100
@@ -62,7 +62,7 @@ class SongViewModel @Inject constructor(
         .onEach { songs ->
             val firstItemId = songs.firstOrNull()?.id
             if (firstItemId != null && previousFirstItemId != null && firstItemId != previousFirstItemId) {
-                _uiEvent.emit(SongUiEvent.ScrollToTop)
+                _uiEvent.send(SongUiEvent.ScrollToTop)
             }
             previousFirstItemId = firstItemId
         }
@@ -141,16 +141,12 @@ class SongViewModel @Inject constructor(
     }
 
     /**
-     * Saves the played song to the database if not already present.
+     * Saves the played song to the database.
      * @param song The song that was played.
      */
     fun onSongPlayed(song: Song) {
         viewModelScope.launch {
-            val songs = (recentlyPlayedSongs.value as? UiState.Success)?.data ?: emptyList()
-            val alreadySaved = songs.any { it.id == song.id }
-            if (!alreadySaved) {
-                saveRecentSongUseCase(song)
-            }
+            saveRecentSongUseCase(song)
         }
     }
 }

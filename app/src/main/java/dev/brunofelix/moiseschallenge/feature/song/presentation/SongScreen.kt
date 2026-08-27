@@ -35,7 +35,6 @@ import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
 import dev.brunofelix.moiseschallenge.feature.song.presentation.components.RecentSongsContent
 import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SearchOverlay
 import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SongTopBar
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
@@ -52,8 +51,8 @@ internal fun SongRoute(
     var selectedSong by remember { mutableStateOf(Song()) }
     val listState = rememberLazyListState()
 
-    LaunchedEffect(viewModel.uiEvent) {
-        viewModel.uiEvent.collectLatest { event ->
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
             when (event) {
                 is SongUiEvent.ScrollToTop -> {
                     listState.animateScrollToItem(0)
