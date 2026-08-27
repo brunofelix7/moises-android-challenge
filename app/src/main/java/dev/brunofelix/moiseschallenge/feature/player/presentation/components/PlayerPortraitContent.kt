@@ -16,21 +16,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.brunofelix.moiseschallenge.core.domain.model.Song
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
+import dev.brunofelix.moiseschallenge.feature.player.presentation.PlayerUiAction
+import dev.brunofelix.moiseschallenge.feature.player.presentation.PlayerUiState
 
 @Composable
 internal fun PlayerPortraitContent(
-    song: Song,
-    isPlaying: Boolean,
-    currentPosition: Long,
-    totalDuration: Long,
-    isRepeatEnabled: Boolean,
-    onPlayPauseClick: () -> Unit,
-    onPreviousClick: () -> Unit,
-    onNextClick: () -> Unit,
-    onSeek: (Float) -> Unit,
-    onRepeatClick: () -> Unit,
+    uiState: PlayerUiState,
+    onAction: (PlayerUiAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val song = uiState.song ?: return
     val scrollState = rememberScrollState()
 
     Column(
@@ -63,18 +58,18 @@ internal fun PlayerPortraitContent(
             )
             Spacer(modifier = Modifier.height(20.dp))
             PlayerSlider(
-                currentPosition = currentPosition,
-                totalDuration = totalDuration,
-                onSeek = onSeek
+                currentPosition = uiState.currentPosition,
+                totalDuration = uiState.totalDuration,
+                onSeek = { position -> onAction(PlayerUiAction.OnSeek(position)) }
             )
             Spacer(modifier = Modifier.height(20.dp))
             PlayerControls(
-                isPlaying = isPlaying,
-                isRepeatEnabled = isRepeatEnabled,
-                onPlayPauseClick = onPlayPauseClick,
-                onPreviousClick = onPreviousClick,
-                onNextClick = onNextClick,
-                onRepeatClick = onRepeatClick
+                isPlaying = uiState.isPlaying,
+                isRepeatEnabled = uiState.isRepeatEnabled,
+                onPlayPauseClick = { onAction(PlayerUiAction.OnPlayPause) },
+                onPreviousClick = { onAction(PlayerUiAction.OnPrevious) },
+                onNextClick = { onAction(PlayerUiAction.OnNext) },
+                onRepeatClick = { onAction(PlayerUiAction.OnToggleRepeat) }
             )
         }
     }
@@ -85,20 +80,18 @@ internal fun PlayerPortraitContent(
 private fun PlayerPortraitContentPreview() {
     AppTheme {
         PlayerPortraitContent(
-            song = Song(
-                id = 1,
-                title = "Get Lucky",
-                artist = "Daft Punk feat. Pharrell Williams",
+            uiState = PlayerUiState(
+                song = Song(
+                    id = 1,
+                    title = "Get Lucky",
+                    artist = "Daft Punk feat. Pharrell Williams",
+                ),
+                isPlaying = true,
+                currentPosition = 86000L,
+                totalDuration = 260000L,
+                isRepeatEnabled = false
             ),
-            isPlaying = true,
-            currentPosition = 86000L,
-            totalDuration = 260000L,
-            isRepeatEnabled = false,
-            onPlayPauseClick = {},
-            onPreviousClick = {},
-            onNextClick = {},
-            onSeek = {},
-            onRepeatClick = {}
+            onAction = {}
         )
     }
 }

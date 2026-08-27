@@ -19,9 +19,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.brunofelix.moiseschallenge.R
-import dev.brunofelix.moiseschallenge.core.domain.model.Song
-import dev.brunofelix.moiseschallenge.core.domain.player.PlayerRepeatMode
-import dev.brunofelix.moiseschallenge.core.domain.player.PlayerState
 import dev.brunofelix.moiseschallenge.core.presentation.components.AppTopBar
 import dev.brunofelix.moiseschallenge.core.presentation.components.SongActionSheet
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
@@ -37,12 +34,9 @@ internal fun PlayerRoute(
     onBack: () -> Unit,
     viewModel: PlayerViewModel = hiltViewModel()
 ) {
-    val song by viewModel.song.collectAsStateWithLifecycle()
-    val isPlaying by viewModel.playerState.collectAsStateWithLifecycle(initialValue = PlayerState.Playing)
-    val currentPosition by viewModel.currentPosition.collectAsStateWithLifecycle(initialValue = 0L)
-    val duration by viewModel.duration.collectAsStateWithLifecycle(initialValue = 0L)
-    val isRepeatEnabled by viewModel.repeatMode.collectAsStateWithLifecycle(initialValue = PlayerRepeatMode.OFF)
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var isSheetVisible by remember { mutableStateOf(false) }
+    val currentUiState = uiState.copy(isSheetVisible = isSheetVisible)
 
     BackHandler(enabled = true) {
         onBack()
@@ -53,26 +47,25 @@ internal fun PlayerRoute(
     }
 
     PlayerScreen(
-        song = song,
-        isPlaying = isPlaying == PlayerState.Playing,
-        currentPosition = currentPosition,
-        totalDuration = duration,
-        isRepeatEnabled = isRepeatEnabled == PlayerRepeatMode.ONE,
-        isSheetVisible = isSheetVisible,
-        onBack = onBack,
-        onPlayPauseClick = {
-            if (isPlaying == PlayerState.Playing) viewModel.pause() else viewModel.resume()
-        },
-        onPreviousClick = viewModel::moveBackward,
-        onNextClick = viewModel::moveForward,
-        onSeek = { position -> viewModel.seekTo(position.toLong()) },
-        onRepeatClick = viewModel::toggleRepeatMode,
-        onActionClick = { isSheetVisible = true },
-        onDismissSheet = { isSheetVisible = false },
-        onViewAlbumClick = {
-            isSheetVisible = false
-            song?.albumId?.let { albumId ->
-                onReplace(Route.Album(albumId))
+        uiState = currentUiState,
+        onAction = { action ->
+            when (action) {
+                PlayerUiAction.OnPlayPause -> {
+                    if (currentUiState.isPlaying) viewModel.pause() else viewModel.resume()
+                }
+                PlayerUiAction.OnPrevious -> viewModel.moveBackward()
+                PlayerUiAction.OnNext -> viewModel.moveForward()
+                is PlayerUiAction.OnSeek -> viewModel.seekTo(action.position.toLong())
+                PlayerUiAction.OnToggleRepeat -> viewModel.toggleRepeatMode()
+                PlayerUiAction.OnBack -> onBack()
+                PlayerUiAction.OnActionClick -> isSheetVisible = true
+                PlayerUiAction.OnDismissSheet -> isSheetVisible = false
+                PlayerUiAction.OnViewAlbumClick -> {
+                    isSheetVisible = false
+                    currentUiState.song?.albumId?.let { albumId ->
+                        onReplace(Route.Album(albumId))
+                    }
+                }
             }
         }
     )
@@ -80,22 +73,9 @@ internal fun PlayerRoute(
 
 @Composable
 internal fun PlayerScreen(
-    modifier: Modifier = Modifier,
-    song: Song?,
-    isPlaying: Boolean,
-    currentPosition: Long,
-    totalDuration: Long,
-    isRepeatEnabled: Boolean,
-    isSheetVisible: Boolean,
-    onBack: () -> Unit = {},
-    onPlayPauseClick: () -> Unit = {},
-    onPreviousClick: () -> Unit = {},
-    onNextClick: () -> Unit = {},
-    onSeek: (Float) -> Unit = {},
-    onRepeatClick: () -> Unit = {},
-    onActionClick: () -> Unit = {},
-    onDismissSheet: () -> Unit = {},
-    onViewAlbumClick: () -> Unit = {}
+    uiState: PlayerUiState,
+    onAction: (PlayerUiAction) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -105,89 +85,42 @@ internal fun PlayerScreen(
                 title = stringResource(R.string.now_playing),
                 titleStyle = MaterialTheme.typography.titleSmall,
                 actionIcon = R.drawable.ic_more,
-                onBack = onBack,
-                onAction = onActionClick
+                onBack = { onAction(PlayerUiAction.OnBack) },
+                onAction = { onAction(PlayerUiAction.OnActionClick) }
             )
         }
     ) { innerPadding ->
         val contentModifier = Modifier.padding(innerPadding)
+        val configuration = LocalConfiguration.current
+        val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-        when (song) {
+        when (uiState.song) {
             null -> {
                 PlayerSkeleton(modifier = contentModifier)
             }
             else -> {
-                PlayerContent(
-                    song = song,
-                    isPlaying = isPlaying,
-                    currentPosition = currentPosition,
-                    totalDuration = totalDuration,
-                    isRepeatEnabled = isRepeatEnabled,
-                    onPlayPauseClick = onPlayPauseClick,
-                    onPreviousClick = onPreviousClick,
-                    onNextClick = onNextClick,
-                    onSeek = onSeek,
-                    onRepeatClick = onRepeatClick,
-                    modifier = contentModifier
-                )
+                if (isLandscape) {
+                    PlayerLandscapeContent(
+                        uiState = uiState,
+                        onAction = onAction,
+                        modifier = modifier
+                    )
+                } else {
+                    PlayerPortraitContent(
+                        uiState = uiState,
+                        onAction = onAction,
+                        modifier = modifier
+                    )
+                }
             }
         }
     }
-
-    if (isSheetVisible && song != null) {
+    if (uiState.isSheetVisible && uiState.song != null) {
         SongActionSheet(
-            songName = song.title,
-            artistName = song.artist,
-            onDismiss = onDismissSheet,
-            onViewAlbumClick = onViewAlbumClick
-        )
-    }
-}
-
-@Composable
-internal fun PlayerContent(
-    song: Song,
-    isPlaying: Boolean,
-    currentPosition: Long,
-    totalDuration: Long,
-    isRepeatEnabled: Boolean,
-    onPlayPauseClick: () -> Unit,
-    onPreviousClick: () -> Unit,
-    onNextClick: () -> Unit,
-    onSeek: (Float) -> Unit,
-    onRepeatClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-    if (isLandscape) {
-        PlayerLandscapeContent(
-            song = song,
-            isPlaying = isPlaying,
-            currentPosition = currentPosition,
-            totalDuration = totalDuration,
-            isRepeatEnabled = isRepeatEnabled,
-            onPlayPauseClick = onPlayPauseClick,
-            onPreviousClick = onPreviousClick,
-            onNextClick = onNextClick,
-            onSeek = onSeek,
-            onRepeatClick = onRepeatClick,
-            modifier = modifier
-        )
-    } else {
-        PlayerPortraitContent(
-            song = song,
-            isPlaying = isPlaying,
-            currentPosition = currentPosition,
-            totalDuration = totalDuration,
-            isRepeatEnabled = isRepeatEnabled,
-            onPlayPauseClick = onPlayPauseClick,
-            onPreviousClick = onPreviousClick,
-            onNextClick = onNextClick,
-            onSeek = onSeek,
-            onRepeatClick = onRepeatClick,
-            modifier = modifier
+            songName = uiState.song.title,
+            artistName = uiState.song.artist,
+            onDismiss = { onAction(PlayerUiAction.OnDismissSheet) },
+            onViewAlbumClick = { onAction(PlayerUiAction.OnViewAlbumClick) }
         )
     }
 }
@@ -197,12 +130,8 @@ internal fun PlayerContent(
 private fun LoadingPreview() {
     AppTheme {
         PlayerScreen(
-            song = null,
-            isPlaying = false,
-            currentPosition = 0L,
-            totalDuration = 0L,
-            isRepeatEnabled = false,
-            isSheetVisible = false
+            uiState = PlayerUiState(),
+            onAction = {}
         )
     }
 }
@@ -212,16 +141,8 @@ private fun LoadingPreview() {
 private fun PlayingPreview() {
     AppTheme {
         PlayerScreen(
-            song = Song(
-                id = 1,
-                title = "Get Lucky",
-                artist = "Daft Punk feat. Pharrell Williams",
-            ),
-            isPlaying = true,
-            currentPosition = 86000L,
-            totalDuration = 260000L,
-            isRepeatEnabled = false,
-            isSheetVisible = false
+            uiState = PlayerUiState.preview,
+            onAction = {}
         )
     }
 }
@@ -231,16 +152,8 @@ private fun PlayingPreview() {
 private fun LandscapePreview() {
     AppTheme {
         PlayerScreen(
-            song = Song(
-                id = 1,
-                title = "Get Lucky",
-                artist = "Daft Punk feat. Pharrell Williams",
-            ),
-            isPlaying = true,
-            currentPosition = 86000L,
-            totalDuration = 260000L,
-            isRepeatEnabled = false,
-            isSheetVisible = false
+            uiState = PlayerUiState.preview,
+            onAction = {}
         )
     }
 }
@@ -250,16 +163,8 @@ private fun LandscapePreview() {
 private fun FoldablePreview() {
     AppTheme {
         PlayerScreen(
-            song = Song(
-                id = 1,
-                title = "Get Lucky",
-                artist = "Daft Punk feat. Pharrell Williams",
-            ),
-            isPlaying = true,
-            currentPosition = 86000L,
-            totalDuration = 260000L,
-            isRepeatEnabled = false,
-            isSheetVisible = false
+            uiState = PlayerUiState.preview,
+            onAction = {}
         )
     }
 }
