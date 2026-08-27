@@ -43,7 +43,7 @@ class ExoPlayerControllerImplTest {
     }
 
     @Test
-    fun test_play_should_set_media_item_and_prepare_player() {
+    fun shouldSetMediaItemPrepareAndPlayWhenPlayIsCalled() {
         runBlocking(Dispatchers.Main) {
             // Arrange
             val song = Song(audioUrl = "https://example.com/audio.mp3")
@@ -59,7 +59,7 @@ class ExoPlayerControllerImplTest {
     }
 
     @Test
-    fun test_resume_should_call_play_on_exoPlayer() {
+    fun shouldCallPlayOnExoPlayerWhenResumeIsCalled() {
         runBlocking(Dispatchers.Main) {
             // Act
             controller.resume()
@@ -70,7 +70,7 @@ class ExoPlayerControllerImplTest {
     }
 
     @Test
-    fun test_pause_should_call_pause_on_exoPlayer() {
+    fun shouldCallPauseOnExoPlayerWhenPauseIsCalled() {
         runBlocking(Dispatchers.Main) {
             // Act
             controller.pause()
@@ -81,20 +81,20 @@ class ExoPlayerControllerImplTest {
     }
 
     @Test
-    fun test_stop_should_reset_position_to_zero_and_pause() {
+    fun shouldStopClearMediaItemsAndResetPositionToZeroWhenStopIsCalled() {
         runBlocking(Dispatchers.Main) {
             // Act
             controller.stop()
 
             // Assert
-            verify { exoPlayer.pause() }
-            verify { exoPlayer.seekTo(0L) }
+            verify { exoPlayer.stop() }
+            verify { exoPlayer.clearMediaItems() }
             controller.currentPosition.value shouldBe 0L
         }
     }
 
     @Test
-    fun test_release_should_call_release_on_exoPlayer() {
+    fun shouldCallReleaseOnExoPlayerWhenReleaseIsCalled() {
         runBlocking(Dispatchers.Main) {
             // Act
             controller.release()
@@ -105,7 +105,7 @@ class ExoPlayerControllerImplTest {
     }
 
     @Test
-    fun test_toggleRepeatMode_should_update_exoPlayer_and_flow() {
+    fun shouldUpdateRepeatModeOnExoPlayerAndFlowWhenToggleRepeatModeIsCalled() {
         runBlocking(Dispatchers.Main) {
             // Act
             controller.toggleRepeatMode()
@@ -124,7 +124,7 @@ class ExoPlayerControllerImplTest {
     }
 
     @Test
-    fun test_seekTo_should_update_exoPlayer_position_and_flow() {
+    fun shouldUpdateExoPlayerPositionAndFlowWhenSeekToIsCalled() {
         runBlocking(Dispatchers.Main) {
             // Arrange
             val position = 5000L
@@ -139,7 +139,7 @@ class ExoPlayerControllerImplTest {
     }
 
     @Test
-    fun test_moveForward_should_increment_position_by_5_seconds() {
+    fun shouldIncrementPositionBy5SecondsWhenMoveForwardIsCalled() {
         runBlocking(Dispatchers.Main) {
             // Arrange
             val initialPosition = 5000L
@@ -156,7 +156,7 @@ class ExoPlayerControllerImplTest {
     }
 
     @Test
-    fun test_moveBackward_should_decrement_position_by_5_seconds() {
+    fun shouldDecrementPositionBy5SecondsWhenMoveBackwardIsCalled() {
         runBlocking(Dispatchers.Main) {
             // Arrange
             val initialPosition = 15000L
