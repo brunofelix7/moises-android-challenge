@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -26,13 +28,14 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import dev.brunofelix.moiseschallenge.core.domain.model.Song
+import dev.brunofelix.moiseschallenge.core.presentation.components.SongActionSheet
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
 import dev.brunofelix.moiseschallenge.feature.song.presentation.components.RecentSongsContent
 import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SearchOverlay
-import dev.brunofelix.moiseschallenge.core.presentation.components.SongActionSheet
 import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SongTopBar
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
@@ -40,19 +43,31 @@ internal fun SongRoute(
     onNavigate: (Route) -> Unit,
     viewModel: SongViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.state.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val recentSongsState by viewModel.recentlyPlayedSongs.collectAsStateWithLifecycle()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
     var showSearchBar by remember { mutableStateOf(false) }
     var isSheetVisible by remember { mutableStateOf(false) }
     var albumId by remember { mutableLongStateOf(0L) }
     var selectedSong by remember { mutableStateOf(Song()) }
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(viewModel.uiEvent) {
+        viewModel.uiEvent.collectLatest { event ->
+            when (event) {
+                is SongUiEvent.ScrollToTop -> {
+                    listState.animateScrollToItem(0)
+                }
+            }
+        }
+    }
 
     SongScreen(
         uiState = uiState,
         recentSongsState = recentSongsState,
         searchResults = searchResults,
         showSearchBar = showSearchBar,
+        listState = listState,
         onShowSearchBarChange = { showSearchBar = it },
         onQueryChange = viewModel::onQueryChange,
         onRetrySearch = viewModel::onRetrySearch,
@@ -89,6 +104,7 @@ internal fun SongScreen(
     recentSongsState: UiState<List<Song>>,
     searchResults: LazyPagingItems<Song>,
     showSearchBar: Boolean,
+    listState: LazyListState = rememberLazyListState(),
     onShowSearchBarChange: (Boolean) -> Unit = {},
     onQueryChange: (String) -> Unit = {},
     onRetrySearch: () -> Unit = {},
@@ -132,6 +148,7 @@ internal fun SongScreen(
             ) {
                 RecentSongsContent(
                     uiState = recentSongsState,
+                    listState = listState,
                     onSongClick = { song ->
                         closeSearch()
                         onSongClick(song)
