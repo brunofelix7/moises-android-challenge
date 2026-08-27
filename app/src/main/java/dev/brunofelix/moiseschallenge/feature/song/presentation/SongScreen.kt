@@ -43,7 +43,6 @@ internal fun SongRoute(
     viewModel: SongViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val recentSongsState by viewModel.recentlyPlayedSongs.collectAsStateWithLifecycle()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
     var showSearchBar by remember { mutableStateOf(false) }
     var isSheetVisible by remember { mutableStateOf(false) }
@@ -61,23 +60,33 @@ internal fun SongRoute(
         }
     }
 
+    val currentUiState = uiState.copy(showSearchBar = showSearchBar)
+
     SongScreen(
-        uiState = uiState,
-        recentSongsState = recentSongsState,
+        uiState = currentUiState,
         searchResults = searchResults,
-        showSearchBar = showSearchBar,
         listState = listState,
-        onShowSearchBarChange = { showSearchBar = it },
-        onQueryChange = viewModel::onQueryChange,
-        onRetrySearch = viewModel::onRetrySearch,
-        onSongClick = { song ->
-            viewModel.onSongPlayed(song)
-            onNavigate(Route.Player(song.id))
-        },
-        onAlbumClick = { song ->
-            albumId = song.albumId ?: 0L
-            selectedSong = song
-            isSheetVisible = true
+        onAction = { action ->
+            when (action) {
+                is SongUiAction.OnShowSearchBarChange -> {
+                    showSearchBar = action.show
+                }
+                is SongUiAction.OnQueryChange -> {
+                    viewModel.onQueryChange(action.query)
+                }
+                SongUiAction.OnRetrySearch -> {
+                    viewModel.onRetrySearch()
+                }
+                is SongUiAction.OnSongClick -> {
+                    viewModel.onSongPlayed(action.song)
+                    onNavigate(Route.Player(action.song.id))
+                }
+                is SongUiAction.OnAlbumClick -> {
+                    albumId = action.song.albumId ?: 0L
+                    selectedSong = action.song
+                    isSheetVisible = true
+                }
+            }
         }
     )
 
@@ -98,28 +107,22 @@ internal fun SongRoute(
 
 @Composable
 internal fun SongScreen(
-    modifier: Modifier = Modifier,
     uiState: SongUiState,
-    recentSongsState: UiState<List<Song>>,
     searchResults: LazyPagingItems<Song>,
-    showSearchBar: Boolean,
-    listState: LazyListState = rememberLazyListState(),
-    onShowSearchBarChange: (Boolean) -> Unit = {},
-    onQueryChange: (String) -> Unit = {},
-    onRetrySearch: () -> Unit = {},
-    onSongClick: (Song) -> Unit = {},
-    onAlbumClick: (Song) -> Unit = {}
+    onAction: (SongUiAction) -> Unit,
+    modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState()
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val closeSearch = {
-        onShowSearchBarChange(false)
-        onQueryChange("")
+        onAction(SongUiAction.OnShowSearchBarChange(false))
+        onAction(SongUiAction.OnQueryChange(""))
     }
 
-    LaunchedEffect(showSearchBar) {
-        if (showSearchBar) {
+    LaunchedEffect(uiState.showSearchBar) {
+        if (uiState.showSearchBar) {
             focusRequester.requestFocus()
             keyboardController?.show()
         } else {
@@ -133,8 +136,8 @@ internal fun SongScreen(
         containerColor = Color.Transparent,
         topBar = {
             SongTopBar(
-                showSearchBar = showSearchBar,
-                onShowSearchBarChange = onShowSearchBarChange,
+                showSearchBar = uiState.showSearchBar,
+                onShowSearchBarChange = { show -> onAction(SongUiAction.OnShowSearchBarChange(show)) },
                 onCancelSearch = closeSearch
             )
         },
@@ -146,32 +149,32 @@ internal fun SongScreen(
                     .padding(innerPadding)
             ) {
                 RecentSongsContent(
-                    uiState = recentSongsState,
+                    uiState = uiState.recentSongsState,
                     listState = listState,
                     onSongClick = { song ->
                         closeSearch()
-                        onSongClick(song)
+                        onAction(SongUiAction.OnSongClick(song))
                     },
                     onAlbumClick = { song ->
-                        onAlbumClick(song)
+                        onAction(SongUiAction.OnAlbumClick(song))
                     }
                 )
                 SearchOverlay(
-                    isVisible = showSearchBar,
+                    isVisible = uiState.showSearchBar,
                     query = uiState.query,
                     searchState = uiState.searchState,
                     searchResults = searchResults,
                     focusRequester = focusRequester,
-                    onQueryChange = onQueryChange,
+                    onQueryChange = { query -> onAction(SongUiAction.OnQueryChange(query)) },
                     onClose = closeSearch,
                     onSongClick = { song ->
                         closeSearch()
-                        onSongClick(song)
+                        onAction(SongUiAction.OnSongClick(song))
                     },
                     onAlbumClick = { song ->
-                        onAlbumClick(song)
+                        onAction(SongUiAction.OnAlbumClick(song))
                     },
-                    onRetry = onRetrySearch,
+                    onRetry = { onAction(SongUiAction.OnRetrySearch) },
                     modifier = Modifier.zIndex(1f)
                 )
             }
@@ -184,10 +187,9 @@ internal fun SongScreen(
 private fun EmptyPreview() {
     AppTheme {
         SongScreen(
-            uiState = SongUiState(),
-            recentSongsState = UiState.Empty,
+            uiState = SongUiState(recentSongsState = UiState.Empty),
             searchResults = flowOf(PagingData.empty<Song>()).collectAsLazyPagingItems(),
-            showSearchBar = false
+            onAction = {}
         )
     }
 }
@@ -197,10 +199,9 @@ private fun EmptyPreview() {
 private fun LoadingPreview() {
     AppTheme {
         SongScreen(
-            uiState = SongUiState(),
-            recentSongsState = UiState.Loading,
+            uiState = SongUiState(recentSongsState = UiState.Loading),
             searchResults = flowOf(PagingData.empty<Song>()).collectAsLazyPagingItems(),
-            showSearchBar = false
+            onAction = {}
         )
     }
 }
@@ -214,10 +215,9 @@ private fun RecentSongsPreview() {
     )
     AppTheme {
         SongScreen(
-            uiState = SongUiState(),
-            recentSongsState = UiState.Success(mockSongs),
+            uiState = SongUiState(recentSongsState = UiState.Success(mockSongs)),
             searchResults = flowOf(PagingData.empty<Song>()).collectAsLazyPagingItems(),
-            showSearchBar = false
+            onAction = {}
         )
     }
 }
@@ -231,10 +231,14 @@ private fun SearchPreview() {
     )
     AppTheme {
         SongScreen(
-            uiState = SongUiState(query = "Linkin", searchState = UiState.Success(Unit)),
-            recentSongsState = UiState.Success(mockSongs),
+            uiState = SongUiState(
+                query = "Linkin",
+                searchState = UiState.Success(Unit),
+                recentSongsState = UiState.Success(mockSongs),
+                showSearchBar = true
+            ),
             searchResults = flowOf(PagingData.from(mockSongs)).collectAsLazyPagingItems(),
-            showSearchBar = true
+            onAction = {}
         )
     }
 }

@@ -21,8 +21,9 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -43,9 +44,6 @@ class SongViewModel @Inject constructor(
     private val searchSongsUseCase: SearchSongsUseCase,
     private val saveRecentSongUseCase: SaveRecentSongUseCase
 ) : ViewModel() {
-
-    private val _uiState = MutableStateFlow(SongUiState())
-    val uiState = _uiState.asStateFlow()
 
     private val _uiEvent = Channel<SongUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -75,6 +73,21 @@ class SongViewModel @Inject constructor(
             started = SharingStarted.Lazily,
             initialValue = UiState.Loading
         )
+
+    /**
+     * Combines the current UI state with the recently played songs to create the final UI state.
+     */
+    private val _uiState = MutableStateFlow(SongUiState())
+    val uiState: StateFlow<SongUiState> = combine(
+        _uiState,
+        recentlyPlayedSongs
+    ) { state, recent ->
+        state.copy(recentSongsState = recent)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = SongUiState()
+    )
 
     /**
      * Retrieves the search results based on the current query.
