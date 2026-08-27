@@ -14,9 +14,11 @@
   <img src="screenshots/screenshot_05.png" width="30%" alt="screenshot" />
   <img src="screenshots/screenshot_06.png" width="30%" alt="screenshot" />
 </div>
+
 ---
+
 <div>
-  <img src="screenshots/landscape_screenshot.png" width="90%" alt="screenshot" />
+  <img src="screenshots/landscape_screenshot.png" width="100%" alt="screenshot" />
 </div>
 
 ---
@@ -64,15 +66,6 @@ The project uses the **MVVM (Model-View-ViewModel)** architecture combined with 
 
 ---
 
-## 🧪 Testing
-The project has a solid testing foundation to ensure code quality:
-- **Unit Tests**: JUnit 4, Kotest, MockK, Mockito, and Truth.
-- **Network Tests**: MockWebServer for mocking API responses.
-- **Integration Tests**: Robolectric for testing Android framework on the JVM.
-- **UI Tests**: Espresso and Compose UI Test.
-
----
-
 ## 📝 Commit Patterns
 
 The project adopts the **Conventional Commits** standard in conjunction with **Gitmojis** to maintain a readable and organized change history.
@@ -104,6 +97,15 @@ The project's development followed a structured branching model inspired by **Gi
 - `fix/ui-tweaks`: Adjustments and bug fixes in the user interface and responsiveness.
 - `test/unit-tests`: Addition of unit tests for the domain, data, and presentation layers.
 - `test/ui-tests`: Implementation of UI and integration tests.
+
+---
+
+## 🧪 Testing
+The project has a solid testing foundation to ensure code quality:
+- **Unit Tests**: JUnit 4, Kotest, MockK, Mockito, and Truth.
+- **Network Tests**: MockWebServer for mocking API responses.
+- **Integration Tests**: Robolectric for testing Android framework on the JVM.
+- **UI Tests**: Espresso and Compose UI Test.
 
 ---
 
