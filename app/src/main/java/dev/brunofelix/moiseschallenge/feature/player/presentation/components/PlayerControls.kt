@@ -27,7 +27,7 @@ import dev.brunofelix.moiseschallenge.core.presentation.design_system.greenColor
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.playerGrayColor
 
 @Composable
-fun PlayerControls(
+internal fun PlayerControls(
     isPlaying: Boolean,
     isRepeatEnabled: Boolean,
     onPlayPauseClick: () -> Unit,

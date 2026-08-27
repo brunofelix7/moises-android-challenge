@@ -14,7 +14,7 @@ import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.smallSpacing
 
 @Composable
-fun PlayerInfo(
+internal fun PlayerInfo(
     title: String,
     artist: String,
     modifier: Modifier = Modifier

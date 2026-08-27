@@ -4,11 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.brunofelix.moiseschallenge.core.domain.player.PlayerController
+import dev.brunofelix.moiseschallenge.core.domain.player.PlayerRepeatMode
+import dev.brunofelix.moiseschallenge.core.domain.player.PlayerState
 import dev.brunofelix.moiseschallenge.feature.player.domain.use_case.GetSavedSongByIdUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onEach
@@ -45,6 +49,26 @@ class PlayerViewModel @Inject constructor(
             started = SharingStarted.Lazily,
             initialValue = null
         )
+
+    internal val uiState: StateFlow<PlayerUiState> = combine(
+        song,
+        playerState,
+        currentPosition,
+        duration,
+        repeatMode
+    ) { song, state, position, duration, repeat ->
+        PlayerUiState(
+            song = song,
+            isPlaying = state == PlayerState.Playing,
+            currentPosition = position,
+            totalDuration = duration,
+            isRepeatEnabled = repeat == PlayerRepeatMode.ONE
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = PlayerUiState()
+    )
 
     fun init(id: Long) {
         if (_songId.value == null) {

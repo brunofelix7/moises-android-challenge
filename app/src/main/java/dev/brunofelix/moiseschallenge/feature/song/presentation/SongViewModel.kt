@@ -17,6 +17,7 @@ import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SaveRecentSon
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SearchSongsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -42,8 +44,28 @@ class SongViewModel @Inject constructor(
     private val saveRecentSongUseCase: SaveRecentSongUseCase
 ) : ViewModel() {
 
+    private val _uiState = MutableStateFlow(SongUiState())
+    val uiState = _uiState.asStateFlow()
+
+    private val _uiEvent = Channel<SongUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
+
+    private val pageSize = 20
+    private val maxSearchResults = 100
+    private var previousFirstItemId: Long? = null
+
+    /**
+     * Retrieves the recently played songs from the database.
+     */
     val recentlyPlayedSongs = getRecentlyPlayedSongsUseCase()
         .onEach { delay(500.milliseconds) }
+        .onEach { songs ->
+            val firstItemId = songs.firstOrNull()?.id
+            if (firstItemId != null && previousFirstItemId != null && firstItemId != previousFirstItemId) {
+                _uiEvent.send(SongUiEvent.ScrollToTop)
+            }
+            previousFirstItemId = firstItemId
+        }
         .map { songs ->
             if (songs.isEmpty()) UiState.Empty else UiState.Success(songs)
         }
@@ -54,21 +76,18 @@ class SongViewModel @Inject constructor(
             initialValue = UiState.Loading
         )
 
-    private val _state = MutableStateFlow(SongUiState())
-    val state = _state.asStateFlow()
-
-    private val pageSize = 20
-    private val maxSearchResults = 100
-
-    val searchResults = _state
+    /**
+     * Retrieves the search results based on the current query.
+     */
+    val searchResults = _uiState
         .map { it.query }
         .distinctUntilChanged()
         .debounce(500.milliseconds)
         .onEach { query ->
             if (query.isNotBlank()) {
-                _state.update { it.copy(searchState = UiState.Loading) }
+                _uiState.update { it.copy(searchState = UiState.Loading) }
             } else {
-                _state.update { it.copy(searchState = UiState.Initial) }
+                _uiState.update { it.copy(searchState = UiState.Initial) }
             }
         }
         .flatMapLatest { query ->
@@ -78,7 +97,7 @@ class SongViewModel @Inject constructor(
                 val result = searchSongsUseCase(query, maxSearchResults)
                 result.fold(
                     onSuccess = { songs ->
-                        _state.update {
+                        _uiState.update {
                             it.copy(searchState = if (songs.isEmpty()) UiState.Empty else UiState.Success(Unit))
                         }
                         Pager(
@@ -91,7 +110,7 @@ class SongViewModel @Inject constructor(
                         }.flow
                     },
                     onFailure = { error ->
-                        _state.update { it.copy(searchState = UiState.Error(error.toUiText())) }
+                        _uiState.update { it.copy(searchState = UiState.Error(error.toUiText())) }
                         flowOf(PagingData.empty())
                     }
                 )
@@ -104,7 +123,7 @@ class SongViewModel @Inject constructor(
      * @param query The new query value.
      */
     fun onQueryChange(query: String) {
-        _state.update {
+        _uiState.update {
             it.copy(
                 query = query,
                 searchState = if (query.isBlank()) UiState.Initial else it.searchState
@@ -116,22 +135,18 @@ class SongViewModel @Inject constructor(
      * Retries the current search query.
      */
     fun onRetrySearch() {
-        val currentQuery = _state.value.query
+        val currentQuery = _uiState.value.query
         onQueryChange("")
         onQueryChange(currentQuery)
     }
 
     /**
-     * Saves the played song to the database if not already present.
+     * Saves the played song to the database.
      * @param song The song that was played.
      */
     fun onSongPlayed(song: Song) {
         viewModelScope.launch {
-            val songs = (recentlyPlayedSongs.value as? UiState.Success)?.data ?: emptyList()
-            val alreadySaved = songs.any { it.id == song.id }
-            if (!alreadySaved) {
-                saveRecentSongUseCase(song)
-            }
+            saveRecentSongUseCase(song)
         }
     }
 }

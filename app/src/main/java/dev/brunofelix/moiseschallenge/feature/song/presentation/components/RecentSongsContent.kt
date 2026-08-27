@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.LibraryMusic
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -31,20 +30,12 @@ internal fun RecentSongsContent(
     uiState: UiState<List<Song>>,
     onSongClick: (Song) -> Unit,
     onAlbumClick: (Song) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState()
 ) {
-    val listState = rememberLazyListState()
-
-    if (uiState is UiState.Success) {
-        val firstItemId = uiState.data.firstOrNull()?.id
-        LaunchedEffect(firstItemId) {
-            if (firstItemId != null) {
-                listState.animateScrollToItem(0)
-            }
-        }
-    }
-
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
         when (uiState) {
             is UiState.Initial, is UiState.Loading -> {
                 RecentSongsList(modifier = Modifier.fillMaxSize()) {
