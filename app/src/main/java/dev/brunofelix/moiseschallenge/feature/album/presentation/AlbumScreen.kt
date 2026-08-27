@@ -42,7 +42,7 @@ internal fun AlbumRoute(
     onBack: () -> Unit,
     viewModel: AlbumViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.state.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     BackHandler(enabled = true) {
         onBack()
@@ -54,13 +54,15 @@ internal fun AlbumRoute(
 
     AlbumScreen(
         uiState = uiState,
-        onBack = onBack,
-        onLoadAlbum = {
-            viewModel.loadAlbum(albumId)
-        },
-        onTrackClick = { song ->
-            viewModel.onTrackPlayed(song)
-            onReplace(Route.Player(song.id))
+        onAction = { action ->
+            when (action) {
+                AlbumUiAction.OnBack -> onBack()
+                AlbumUiAction.OnLoadAlbum -> viewModel.loadAlbum(albumId)
+                is AlbumUiAction.OnTrackClick -> {
+                    viewModel.onTrackPlayed(action.song)
+                    onReplace(Route.Player(action.song.id))
+                }
+            }
         }
     )
 }
@@ -68,9 +70,7 @@ internal fun AlbumRoute(
 @Composable
 internal fun AlbumScreen(
     uiState: UiState<Album>,
-    onBack: () -> Unit,
-    onLoadAlbum: () -> Unit,
-    onTrackClick: (Song) -> Unit,
+    onAction: (AlbumUiAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val title = (uiState as? UiState.Success)?.data?.title ?: ""
@@ -82,7 +82,7 @@ internal fun AlbumScreen(
             AppTopBar(
                 title = title,
                 titleStyle = MaterialTheme.typography.titleSmall,
-                onBack = onBack
+                onBack = { onAction(AlbumUiAction.OnBack) }
             )
         }
     ) { innerPadding ->
@@ -96,7 +96,7 @@ internal fun AlbumScreen(
             is UiState.Success -> {
                 AlbumContent(
                     album = uiState.data,
-                    onTrackClick = onTrackClick,
+                    onTrackClick = { song -> onAction(AlbumUiAction.OnTrackClick(song)) },
                     modifier = Modifier.padding(innerPadding)
                 )
             }
@@ -114,7 +114,7 @@ internal fun AlbumScreen(
                     title = stringResource(R.string.error_title),
                     subtitle = uiState.uiText.asString(LocalContext.current),
                     modifier = Modifier.padding(innerPadding),
-                    onRetry = onLoadAlbum,
+                    onRetry = { onAction(AlbumUiAction.OnLoadAlbum) }
                 )
             }
         }
@@ -149,16 +149,13 @@ private fun AlbumContent(
     }
 }
 
-
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 private fun LoadingPreview() {
     AppTheme {
         AlbumScreen(
             uiState = UiState.Loading,
-            onBack = {},
-            onLoadAlbum = {},
-            onTrackClick = {}
+            onAction = {}
         )
     }
 }
@@ -180,9 +177,7 @@ private fun SuccessPreview() {
                     )
                 )
             ),
-            onBack = {},
-            onLoadAlbum = {},
-            onTrackClick = {}
+            onAction = {}
         )
     }
 }
@@ -193,9 +188,7 @@ private fun EmptyPreview() {
     AppTheme {
         AlbumScreen(
             uiState = UiState.Empty,
-            onBack = {},
-            onLoadAlbum = {},
-            onTrackClick = {}
+            onAction = {}
         )
     }
 }
@@ -206,9 +199,7 @@ private fun ErrorPreview() {
     AppTheme {
         AlbumScreen(
             uiState = UiState.Error(UiText.DynamicString("Could not load album details")),
-            onBack = {},
-            onLoadAlbum = {},
-            onTrackClick = {}
+            onAction = {}
         )
     }
 }

@@ -22,21 +22,25 @@ class AlbumViewModel @Inject constructor(
     private val saveRecentSongUseCase: SaveRecentSongUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<UiState<Album>>(UiState.Initial)
-    val state = _state.asStateFlow()
+    private val _uiState = MutableStateFlow<UiState<Album>>(UiState.Initial)
+    val uiState = _uiState.asStateFlow()
 
     private var currentAlbumId: Long? = null
 
+    /**
+     * Loads the album details for the given album ID.
+     * @param albumId The ID of the album to load.
+     */
     fun loadAlbum(albumId: Long) {
-        if (currentAlbumId == albumId && _state.value is UiState.Success) {
+        if (currentAlbumId == albumId && _uiState.value is UiState.Success) {
             return
         }
         currentAlbumId = albumId
         viewModelScope.launch {
-            _state.update { UiState.Loading }
+            _uiState.update { UiState.Loading }
             when (val result = getAlbumByIdUseCase(albumId)) {
                 is Resource.Success -> {
-                    _state.update {
+                    _uiState.update {
                         if (result.data.tracks.isEmpty()) {
                             UiState.Empty
                         } else {
@@ -45,12 +49,16 @@ class AlbumViewModel @Inject constructor(
                     }
                 }
                 is Resource.Error -> {
-                    _state.update { UiState.Error(result.throwable.toUiText()) }
+                    _uiState.update { UiState.Error(result.throwable.toUiText()) }
                 }
             }
         }
     }
 
+    /**
+     * Saves the played song to the database.
+     * @param song The song that was played.
+     */
     fun onTrackPlayed(song: Song) {
         viewModelScope.launch {
             saveRecentSongUseCase(song)
