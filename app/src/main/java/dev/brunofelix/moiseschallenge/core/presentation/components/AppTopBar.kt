@@ -39,7 +39,7 @@ fun AppTopBar(
             IconButton(onClick = onAction) {
                 Icon(
                     painter = painterResource(actionIcon),
-                    contentDescription = null
+                    contentDescription = stringResource(R.string.cd_more_options)
                 )
             }
         }
@@ -67,7 +67,7 @@ fun AppTopBar(
                 IconButton(onClick = onBack) {
                     Icon(
                         painter = painterResource(R.drawable.ic_arrow_left),
-                        contentDescription = null
+                        contentDescription = stringResource(R.string.cd_back_button)
                     )
                 }
             }

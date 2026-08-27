@@ -50,7 +50,7 @@ fun PlayerControls(
         ) {
             Icon(
                 painter = if (isPlaying) painterResource(R.drawable.ic_pause) else painterResource(R.drawable.ic_play),
-                contentDescription = if (isPlaying) stringResource(R.string.pause) else stringResource(R.string.play),
+                contentDescription = stringResource(R.string.cd_play_pause_button),
                 tint = Color.White,
                 modifier = Modifier.size(36.dp)
             )
@@ -59,7 +59,7 @@ fun PlayerControls(
         IconButton(onClick = onPreviousClick) {
             Icon(
                 painter = painterResource(R.drawable.ic_backward_bar_fill),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.cd_move_backward_button),
                 tint = Color.White,
                 modifier = Modifier.size(36.dp)
             )
@@ -68,7 +68,7 @@ fun PlayerControls(
         IconButton(onClick = onNextClick) {
             Icon(
                 painter = painterResource(R.drawable.ic_forward_bar_fill),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.cd_move_forward_button),
                 tint = Color.White,
                 modifier = Modifier.size(36.dp)
             )
@@ -77,7 +77,7 @@ fun PlayerControls(
         IconButton(onClick = onRepeatClick) {
             Icon(
                 painter = painterResource(R.drawable.ic_play_on_repeat),
-                contentDescription = stringResource(R.string.repeat),
+                contentDescription = stringResource(R.string.cd_repeat_button),
                 tint = if (isRepeatEnabled) greenColor else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )

@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
-import dev.brunofelix.moiseschallenge.core.presentation.design_system.extraSmallSpacing
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.smallSpacing
 
 @Composable
 fun PlayerInfo(
@@ -29,7 +29,7 @@ fun PlayerInfo(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Spacer(modifier = Modifier.height(extraSmallSpacing))
+        Spacer(modifier = Modifier.height(smallSpacing))
         Text(
             text = artist,
             style = MaterialTheme.typography.bodyLarge,

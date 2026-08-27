@@ -61,4 +61,12 @@ class LongExtTest : DescribeSpec({
             }
         }
     }
+
+    describe("toMegabits") {
+        it("should convert correctly to bytes") {
+            1L.toMegabits() shouldBe 1024 * 1024L
+            100L.toMegabits() shouldBe 100 * 1024 * 1024L
+            0L.toMegabits() shouldBe 0L
+        }
+    }
 })

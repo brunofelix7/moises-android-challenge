@@ -42,7 +42,7 @@ class PlayerViewModel @Inject constructor(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Lazily,
             initialValue = null
         )
 
@@ -51,8 +51,6 @@ class PlayerViewModel @Inject constructor(
             _songId.value = id
         }
     }
-
-    fun stopPlayback() = playerController.stop()
 
     fun resume() = playerController.resume()
 
@@ -65,8 +63,4 @@ class PlayerViewModel @Inject constructor(
     fun moveBackward() = playerController.moveBackward()
 
     fun toggleRepeatMode() = playerController.toggleRepeatMode()
-
-    override fun onCleared() {
-        playerController.stop()
-    }
 }

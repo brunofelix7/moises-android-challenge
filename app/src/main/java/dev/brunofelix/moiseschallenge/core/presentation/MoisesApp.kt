@@ -1,7 +1,6 @@
 package dev.brunofelix.moiseschallenge.core.presentation
 
 import android.annotation.SuppressLint
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,7 +33,7 @@ fun MoisesApp(
         modifier = modifier,
         backStack = backStack,
         onNavigate = viewModel::navigateTo,
-        onNavigateNext = viewModel::navigateAndPopCurrent,
+        onReplace = viewModel::replaceCurrent,
         onBack = viewModel::popBackStack
     )
 }
@@ -45,13 +44,10 @@ fun MoisesApp(
 fun MoisesAppContent(
     backStack: List<Route>,
     onNavigate: (Route) -> Unit,
-    onNavigateNext: (Route) -> Unit,
+    onReplace: (Route) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BackHandler(enabled = backStack.size > 1) {
-        onBack()
-    }
     Scaffold(
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
@@ -60,7 +56,7 @@ fun MoisesAppContent(
             NavigationGraph(
                 backStack = backStack,
                 onNavigate = onNavigate,
-                onNavigateNext = onNavigateNext,
+                onReplace = onReplace,
                 onBack = onBack
             )
         }
@@ -81,7 +77,7 @@ fun MoisesAppPreview() {
             MoisesAppContent(
                 backStack = listOf(Route.Splash),
                 onNavigate = {},
-                onNavigateNext = {},
+                onReplace = {},
                 onBack = {}
             )
         }

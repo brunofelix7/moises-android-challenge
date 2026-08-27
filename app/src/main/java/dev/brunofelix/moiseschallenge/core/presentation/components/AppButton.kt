@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Button
@@ -20,11 +19,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.brunofelix.moiseschallenge.R
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.smallSpacing
-import dev.brunofelix.moiseschallenge.core.presentation.design_system.spacing18
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.spacing24
 
 @Composable
@@ -50,7 +47,7 @@ fun AppButton(
             icon?.let {
                 Icon(
                     imageVector = it,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_retry_button),
                     modifier = Modifier.size(spacing24),
                     tint = Color.Black
                 )

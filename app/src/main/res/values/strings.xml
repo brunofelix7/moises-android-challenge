@@ -1,5 +1,8 @@
 <resources>
+    <!-- App name -->
     <string name="app_name">Moises Challenge</string>
+
+    <!-- Common -->
     <string name="songs">Songs</string>
     <string name="now_playing">Now playing</string>
     <string name="view_album">View album</string>
@@ -8,8 +11,6 @@
     <string name="cancel">Cancel</string>
     <string name="play">Play</string>
     <string name="pause">Pause</string>
-    <string name="previous">Previous</string>
-    <string name="next">Next</string>
     <string name="repeat">Repeat</string>
     <string name="song_name">Song name</string>
     <string name="artist_name">Artist name</string>
@@ -21,4 +22,29 @@
     <string name="search_no_results_body">Try searching for something else</string>
     <string name="album_no_album_title">No album found</string>
     <string name="album_no_album_body">The album you requested could not be found. Try searching for another album</string>
+
+    <!-- Error messages -->
+    <string name="error_title">Oops!</string>
+    <string name="error_local_database">Your recently songs could not be loaded</string>
+    <string name="error_network_unauthorized">Unauthorized access</string>
+    <string name="error_network_not_found">Song not found</string>
+    <string name="error_network_server">Server error. Please try again later</string>
+    <string name="error_network_no_internet">No internet connection</string>
+    <string name="error_unknown">An unknown error occurred. Please try again later</string>
+
+    <!-- Accessibility - Content descriptions -->
+    <string name="cs_opening_app">Opening app</string>
+    <string name="cd_search_button">Search button</string>
+    <string name="cd_search_bar">Search bar</string>
+    <string name="cd_clear_query">Clear query</string>
+    <string name="cd_retry_button">Retry button</string>
+    <string name="cd_move_forward_button">Move forward button</string>
+    <string name="cd_move_backward_button">Move backward button</string>
+    <string name="cd_album_cover">Album cover</string>
+    <string name="cd_more_options">More options button</string>
+    <string name="cd_view_album">View album button</string>
+    <string name="cd_back_button">Back button</string>
+    <string name="cd_play_pause_button">Play/pause button</string>
+    <string name="cd_repeat_button">Repeat button</string>
+    <string name="cd_empty_state_icon">Empty list icon</string>
 </resources>

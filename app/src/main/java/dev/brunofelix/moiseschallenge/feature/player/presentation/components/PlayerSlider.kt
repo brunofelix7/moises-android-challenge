@@ -7,14 +7,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +34,7 @@ import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.extraSmallSpacing
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.sliderDarkGrayColor
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.sliderLightGrayColor
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.smallSpacing
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.spacing16
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,31 +51,35 @@ internal fun PlayerSlider(
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        Slider(
-            value = dragPosition ?: currentPosition.toFloat(),
-            valueRange = totalDuration.toSafeSliderRange(),
-            onValueChange = { dragPosition = it },
-            onValueChangeFinished = {
-                dragPosition?.let { finalPosition ->
-                    onSeek(finalPosition)
-                    dragPosition = null
+        CompositionLocalProvider(
+            LocalMinimumInteractiveComponentSize provides 0.dp
+        ) {
+            Slider(
+                value = dragPosition ?: currentPosition.toFloat(),
+                valueRange = totalDuration.toSafeSliderRange(),
+                onValueChange = { dragPosition = it },
+                onValueChangeFinished = {
+                    dragPosition?.let { finalPosition ->
+                        onSeek(finalPosition)
+                        dragPosition = null
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .compensateSliderPadding(thumbSize = spacing16),
+                colors = SliderDefaults.colors(
+                    thumbColor = Color.White,
+                    activeTrackColor = sliderLightGrayColor,
+                    inactiveTrackColor = sliderDarkGrayColor
+                ),
+                track = { sliderState ->
+                    SliderTrack(sliderState)
+                },
+                thumb = {
+                    SliderThumb()
                 }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .compensateSliderPadding(thumbSize = spacing16),
-            colors = SliderDefaults.colors(
-                thumbColor = Color.White,
-                activeTrackColor = sliderLightGrayColor,
-                inactiveTrackColor = sliderDarkGrayColor
-            ),
-            track = { sliderState ->
-                SliderTrack(sliderState)
-            },
-            thumb = {
-                SliderThumb()
-            }
-        )
+            )
+        }
         SliderTimers(
             displayPosition = displayPosition,
             totalDuration = totalDuration
@@ -103,7 +111,8 @@ private fun SliderTrack(
             activeTrackColor = sliderLightGrayColor,
             inactiveTrackColor = sliderDarkGrayColor
         ),
-        thumbTrackGapSize = 0.dp
+        thumbTrackGapSize = 0.dp,
+        drawStopIndicator = null
     )
 }
 
@@ -114,7 +123,9 @@ private fun SliderTimers(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = smallSpacing),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(

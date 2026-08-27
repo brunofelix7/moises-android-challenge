@@ -1,15 +1,6 @@
 package dev.brunofelix.moiseschallenge.feature.album.presentation
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.brunofelix.moiseschallenge.core.domain.model.Album
-import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
-import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
-import dev.brunofelix.moiseschallenge.core.presentation.util.UiText
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,27 +11,42 @@ import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.LibraryMusic
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.brunofelix.moiseschallenge.R
+import dev.brunofelix.moiseschallenge.core.domain.model.Album
 import dev.brunofelix.moiseschallenge.core.domain.model.Song
 import dev.brunofelix.moiseschallenge.core.presentation.components.AppStateMessage
 import dev.brunofelix.moiseschallenge.core.presentation.components.AppTopBar
 import dev.brunofelix.moiseschallenge.core.presentation.components.SongItem
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.extraLargeSpacing
+import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
+import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
+import dev.brunofelix.moiseschallenge.core.presentation.util.UiText
 import dev.brunofelix.moiseschallenge.feature.album.presentation.components.AlbumHeader
 import dev.brunofelix.moiseschallenge.feature.album.presentation.components.AlbumSkeleton
 
 @Composable
 internal fun AlbumRoute(
     albumId: Long,
-    onNavigate: (Route) -> Unit,
+    onReplace: (Route) -> Unit,
     onBack: () -> Unit,
     viewModel: AlbumViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
+
+    BackHandler(enabled = true) {
+        onBack()
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadAlbum(albumId)
@@ -49,8 +55,12 @@ internal fun AlbumRoute(
     AlbumScreen(
         uiState = uiState,
         onBack = onBack,
+        onLoadAlbum = {
+            viewModel.loadAlbum(albumId)
+        },
         onTrackClick = { song ->
-            onNavigate(Route.Player(song.id))
+            viewModel.onTrackPlayed(song)
+            onReplace(Route.Player(song.id))
         }
     )
 }
@@ -59,6 +69,7 @@ internal fun AlbumRoute(
 internal fun AlbumScreen(
     uiState: UiState<Album>,
     onBack: () -> Unit,
+    onLoadAlbum: () -> Unit,
     onTrackClick: (Song) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -102,7 +113,8 @@ internal fun AlbumScreen(
                     icon = Icons.Rounded.ErrorOutline,
                     title = stringResource(R.string.error_title),
                     subtitle = uiState.uiText.asString(LocalContext.current),
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.padding(innerPadding),
+                    onRetry = onLoadAlbum,
                 )
             }
         }
@@ -128,6 +140,8 @@ private fun AlbumContent(
         items(album.tracks) { track ->
             SongItem(
                 song = track,
+                itemHeight = 60.dp,
+                imageSize = 44.dp,
                 isActionVisible = false,
                 onClick = { onTrackClick(track) }
             )
@@ -143,6 +157,7 @@ private fun LoadingPreview() {
         AlbumScreen(
             uiState = UiState.Loading,
             onBack = {},
+            onLoadAlbum = {},
             onTrackClick = {}
         )
     }
@@ -166,6 +181,7 @@ private fun SuccessPreview() {
                 )
             ),
             onBack = {},
+            onLoadAlbum = {},
             onTrackClick = {}
         )
     }
@@ -178,6 +194,7 @@ private fun EmptyPreview() {
         AlbumScreen(
             uiState = UiState.Empty,
             onBack = {},
+            onLoadAlbum = {},
             onTrackClick = {}
         )
     }
@@ -190,6 +207,7 @@ private fun ErrorPreview() {
         AlbumScreen(
             uiState = UiState.Error(UiText.DynamicString("Could not load album details")),
             onBack = {},
+            onLoadAlbum = {},
             onTrackClick = {}
         )
     }

@@ -15,22 +15,22 @@ import dev.brunofelix.moiseschallenge.feature.splash.presentation.splashNavEntry
 fun NavigationGraph(
     backStack: List<Route>,
     onNavigate: (Route) -> Unit,
-    onNavigateNext: (Route) -> Unit,
+    onReplace: (Route) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val entryProvider = entryProvider {
         // Splash screen
-        splashNavEntry(onNavigateNext)
+        splashNavEntry(onReplace)
 
         // Songs screen
         songNavEntry(onNavigate)
 
         // Player screen
-        playerNavEntry(onNavigate, onBack)
+        playerNavEntry(onReplace, onBack)
 
         // Album screen
-        albumNavEntry(onNavigate, onBack)
+        albumNavEntry(onReplace, onBack)
     }
 
     NavDisplay(

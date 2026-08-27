@@ -17,6 +17,7 @@ import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SaveRecentSon
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SearchSongsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,7 +28,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -43,14 +43,14 @@ class SongViewModel @Inject constructor(
 ) : ViewModel() {
 
     val recentlyPlayedSongs = getRecentlyPlayedSongsUseCase()
+        .onEach { delay(500.milliseconds) }
         .map { songs ->
             if (songs.isEmpty()) UiState.Empty else UiState.Success(songs)
         }
         .catch { emit(UiState.Error(it.toUiText())) }
-        .onStart { emit(UiState.Loading) }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Lazily,
             initialValue = UiState.Loading
         )
 
@@ -58,7 +58,7 @@ class SongViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     private val pageSize = 20
-    private val maxSearchResults = 60
+    private val maxSearchResults = 100
 
     val searchResults = _state
         .map { it.query }

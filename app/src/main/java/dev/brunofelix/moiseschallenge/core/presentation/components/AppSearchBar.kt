@@ -91,7 +91,7 @@ fun AppSearchBar(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_search),
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_search_bar),
                         tint = iconColor
                     )
                     Spacer(modifier = Modifier.width(smallSpacing))
@@ -114,7 +114,7 @@ fun AppSearchBar(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.cd_clear_query),
                                 tint = iconColor
                             )
                         }

@@ -18,20 +18,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import dev.brunofelix.moiseschallenge.R
 import dev.brunofelix.moiseschallenge.core.domain.model.Song
 import dev.brunofelix.moiseschallenge.core.domain.util.extension.toItunesImageSize
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.extraSmallSpacing
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.infoGrayColor
-import dev.brunofelix.moiseschallenge.core.presentation.design_system.shimmerColorSecondary
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.smallSpacing
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.spacing16
 
@@ -39,6 +36,8 @@ import dev.brunofelix.moiseschallenge.core.presentation.design_system.spacing16
 fun SongItem(
     modifier: Modifier = Modifier,
     song: Song,
+    itemHeight: androidx.compose.ui.unit.Dp = 68.dp,
+    imageSize: androidx.compose.ui.unit.Dp = 52.dp,
     isActionVisible: Boolean = true,
     onClick: () -> Unit = {},
     onAction: () -> Unit = {}
@@ -46,19 +45,16 @@ fun SongItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(68.dp)
+            .height(itemHeight)
             .clickable(onClick = onClick)
             .padding(start = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AsyncImage(
+        AppAsyncImage(
             model = song.coverUrl.toItunesImageSize(60),
-            contentDescription = null,
-            placeholder = ColorPainter(shimmerColorSecondary),
             modifier = Modifier
-                .size(52.dp)
-                .clip(RoundedCornerShape(smallSpacing)),
-            contentScale = ContentScale.Fit
+                .size(imageSize)
+                .clip(RoundedCornerShape(smallSpacing))
         )
         Spacer(modifier = Modifier.width(spacing16))
         Column(
@@ -88,7 +84,7 @@ fun SongItem(
                 Icon(
                     painter = painterResource(R.drawable.ic_more),
                     tint = infoGrayColor,
-                    contentDescription = null
+                    contentDescription = stringResource(R.string.cd_more_options)
                 )
             }
         }
