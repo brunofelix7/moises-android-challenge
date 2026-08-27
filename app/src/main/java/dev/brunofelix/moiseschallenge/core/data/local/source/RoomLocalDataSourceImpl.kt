@@ -25,6 +25,10 @@ class RoomLocalDataSourceImpl @Inject constructor(
     }
 
     override suspend fun saveRecentSong(song: Song): Long {
+        val existing = dao.findById(song.id)
+        if (existing != null) {
+            return song.id
+        }
         return dao.insert(song.toEntity())
     }
 }

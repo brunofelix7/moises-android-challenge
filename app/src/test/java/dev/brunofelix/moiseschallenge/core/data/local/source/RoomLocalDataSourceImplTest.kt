@@ -67,7 +67,7 @@ class RoomLocalDataSourceImplTest : DescribeSpec({
     }
 
     describe("saveRecentSong") {
-        it("should call dao insert and return id") {
+        it("should call dao insert and return id when song does not exist") {
             // Arrange
             val song = Song(
                 id = 1L,
@@ -78,6 +78,7 @@ class RoomLocalDataSourceImplTest : DescribeSpec({
                 durationMillis = 1000L,
                 albumId = 10L
             )
+            coEvery { dao.findById(1L) } returns null
             coEvery { dao.insert(any()) } returns 1L
 
             // Act
@@ -86,6 +87,28 @@ class RoomLocalDataSourceImplTest : DescribeSpec({
             // Assert
             result shouldBe 1L
             coVerify(exactly = 1) { dao.insert(any()) }
+        }
+
+        it("should not call dao insert when song already exists in recent list") {
+            // Arrange
+            val song = Song(
+                id = 1L,
+                title = "Title",
+                artist = "Artist",
+                coverUrl = "cover",
+                audioUrl = "audio",
+                durationMillis = 1000L,
+                albumId = 10L
+            )
+            val entity = SongEntity(1L, "Title", "Artist", "cover", "audio", 1000L, 10L, 123456789L)
+            coEvery { dao.findById(1L) } returns entity
+
+            // Act
+            val result = dataSource.saveRecentSong(song)
+
+            // Assert
+            result shouldBe 1L
+            coVerify(exactly = 0) { dao.insert(any()) }
         }
     }
 })
