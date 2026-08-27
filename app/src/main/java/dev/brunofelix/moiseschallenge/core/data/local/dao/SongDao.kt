@@ -39,4 +39,13 @@ interface SongDao {
      */
     @Query("SELECT * FROM recent_songs WHERE id = :id LIMIT 1")
     fun getById(id: Long): Flow<SongEntity?>
+
+    /**
+     * Finds a specific song by its ID from the 'recent_songs' table.
+     *
+     * @param id The ID of the song to retrieve.
+     * @return The requested song entity, or null if not found.
+     */
+    @Query("SELECT * FROM recent_songs WHERE id = :id LIMIT 1")
+    suspend fun findById(id: Long): SongEntity?
 }
