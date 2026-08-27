@@ -53,10 +53,9 @@ private object SplashDefaults {
         colors = listOf(
             Color(0xFF093A43),
             Color(0xFF000000),
-            Color(0xFF000000)
         ),
-        start = Offset(Float.POSITIVE_INFINITY, 0F),
-        end = Offset(0F, Float.POSITIVE_INFINITY)
+        start = Offset(2500F, 0F),
+        end = Offset(1000F, Float.POSITIVE_INFINITY)
     )
 }
 
