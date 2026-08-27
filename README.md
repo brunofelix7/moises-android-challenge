@@ -15,8 +15,6 @@
   <img src="screenshots/screenshot_06.png" width="30%" alt="screenshot" />
 </div>
 
----
-
 <div>
   <img src="screenshots/landscape_screenshot.png" width="100%" alt="screenshot" />
 </div>
@@ -25,16 +23,16 @@
 
 ## 🏗️ Architecture
 
-<div>
-  <img src="screenshots/architecture.png" width="100%" alt="Architecture Diagram" />
-</div>
-
 The project uses the **MVVM (Model-View-ViewModel)** architecture combined with **Clean Architecture** principles, ensuring a clear separation of concerns, ease of maintenance, and testability.
 
 - **Data**: Implementation of repositories, data sources (Remote and Local), mapping of data models (DTOs), and media player controller.
 - **Domain**: Business rules, domain models, and Use Cases.
 - **Presentation**: Declarative UI with Jetpack Compose, ViewModels for state management, and UI State.
 - **Core**: Shared components, design system, utilities, and base classes for other layers.
+
+<div>
+  <img src="screenshots/architecture.png" width="100%" alt="Architecture Diagram" />
+</div>
 
 ---
 
