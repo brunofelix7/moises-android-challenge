@@ -120,7 +120,7 @@ The project has a solid testing foundation to ensure code quality:
 
 You can download the latest version of the application using the link below:
 
-[![Download APK](https://img.shields.io/badge/Download-APK-green?style=for-the-badge&logo=android)](INSERT_YOUR_APK_LINK_HERE)
+[![Download APK](https://img.shields.io/badge/Download-APK-green?style=for-the-badge&logo=android)](https://github.com/brunofelix7/moises-android-challenge/releases/download/v1.0.0/app-release.apk)
 
 ---
 
