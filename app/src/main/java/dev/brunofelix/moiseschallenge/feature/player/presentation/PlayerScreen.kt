@@ -103,13 +103,13 @@ internal fun PlayerScreen(
                     PlayerLandscapeContent(
                         uiState = uiState,
                         onAction = onAction,
-                        modifier = modifier
+                        modifier = contentModifier
                     )
                 } else {
                     PlayerPortraitContent(
                         uiState = uiState,
                         onAction = onAction,
-                        modifier = modifier
+                        modifier = contentModifier
                     )
                 }
             }

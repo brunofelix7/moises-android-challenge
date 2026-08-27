@@ -28,7 +28,7 @@ import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.util.shimmerEffect
 
 @Composable
-fun PlayerSkeleton(
+internal fun PlayerSkeleton(
     modifier: Modifier = Modifier
 ) {
     val configuration = LocalConfiguration.current
