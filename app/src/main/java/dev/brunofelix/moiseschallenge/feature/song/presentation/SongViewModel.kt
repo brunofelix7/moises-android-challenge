@@ -58,7 +58,7 @@ class SongViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     private val pageSize = 20
-    private val maxSearchResults = 60
+    private val maxSearchResults = 100
 
     val searchResults = _state
         .map { it.query }
