@@ -12,9 +12,10 @@
   <img src="screenshots/screenshot_03.png" width="30%" alt="screenshot" />
   <img src="screenshots/screenshot_04.png" width="30%" alt="screenshot" />
   <img src="screenshots/screenshot_05.png" width="30%" alt="screenshot" />
+  <img src="screenshots/screenshot_06.png" width="30%" alt="screenshot" />
 </div>
 <div>
-  <img src="screenshots/landscape_screenshot.png" width="80%" alt="screenshot" />
+  <img src="screenshots/landscape_screenshot.png" width="100%" alt="screenshot" />
 </div>
 
 ---
@@ -22,7 +23,7 @@
 ## 🏗️ Architecture
 
 <div>
-  <img src="screenshots/architecture.png" width="80%" alt="Architecture Diagram" />
+  <img src="screenshots/architecture.png" width="100%" alt="Architecture Diagram" />
 </div>
 
 The project uses the **MVVM (Model-View-ViewModel)** architecture combined with **Clean Architecture** principles, ensuring a clear separation of concerns, ease of maintenance, and testability.
