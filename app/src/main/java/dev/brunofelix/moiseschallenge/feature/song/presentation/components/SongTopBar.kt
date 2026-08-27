@@ -52,8 +52,8 @@ internal fun SongTopBar(
                 } else {
                     IconButton(onClick = { onShowSearchBarChange(true) }) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_search),
-                            contentDescription = null
+                            painter = painterResource(R.drawable.ic_search),
+                            contentDescription = stringResource(R.string.cd_search_button)
                         )
                     }
                 }

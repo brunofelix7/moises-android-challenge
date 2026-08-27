@@ -94,7 +94,7 @@ private fun SongActionContent(
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_setlist),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.cd_view_album),
                 tint = Color.White,
                 modifier = Modifier.size(spacing24)
             )

@@ -28,7 +28,6 @@ internal fun PlayerCover(
     ) {
         AppAsyncImage(
             model = coverUrl.toItunesImageSize(500),
-            contentDescription = null,
             modifier = Modifier
                 .width(size)
                 .height(size)

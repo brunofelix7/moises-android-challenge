@@ -33,7 +33,6 @@ internal fun AlbumHeader(
     ) {
         AppAsyncImage(
             model = album.coverUrl.toItunesImageSize(200),
-            contentDescription = null,
             modifier = Modifier
                 .size(120.dp)
                 .clip(MaterialTheme.shapes.large)

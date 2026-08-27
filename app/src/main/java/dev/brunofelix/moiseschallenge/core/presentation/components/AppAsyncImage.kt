@@ -6,14 +6,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
+import dev.brunofelix.moiseschallenge.R
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.shimmerColorSecondary
 
 @Composable
 fun AppAsyncImage(
-    model: Any?,
-    contentDescription: String?,
     modifier: Modifier = Modifier,
+    model: Any?,
+    contentDescription: String = stringResource(R.string.cd_album_cover),
     placeholder: Painter? = ColorPainter(shimmerColorSecondary),
     error: Painter? = ColorPainter(shimmerColorSecondary),
     fallback: Painter? = error,

@@ -13,6 +13,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.brunofelix.moiseschallenge.R
@@ -41,7 +42,7 @@ internal fun SplashScreen() {
     ) {
         Image(
             painter = painterResource(R.drawable.ic_logo),
-            contentDescription = null,
+            contentDescription = stringResource(R.string.cs_opening_app),
             modifier = Modifier.size(100.dp)
         )
     }
