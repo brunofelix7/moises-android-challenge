@@ -14,8 +14,9 @@
   <img src="screenshots/screenshot_05.png" width="30%" alt="screenshot" />
   <img src="screenshots/screenshot_06.png" width="30%" alt="screenshot" />
 </div>
+---
 <div>
-  <img src="screenshots/landscape_screenshot.png" width="100%" alt="screenshot" />
+  <img src="screenshots/landscape_screenshot.png" width="90%" alt="screenshot" />
 </div>
 
 ---
