@@ -106,6 +106,7 @@ Beyond SOLID, the project leverages key **Gang of Four (GoF)** and modern Androi
 
 ### Environment & Configuration
 - **Android SDK**: `compileSdk 37`, `minSdk 26`, `targetSdk 36`
+- **Kotlin**: Version 2.4.10
 - **Java**: Version 21
 - **Gradle**: Android Gradle Plugin (AGP) 9.3.1 (Gradle 9.5.0)
 
