@@ -13,5 +13,6 @@ data class SongEntity(
     val audioUrl: String,
     val durationMillis: Long,
     val albumId: Long,
-    val playedAt: Long
+    val playedAt: Long,
+    val lastPlayedAt: Long
 )

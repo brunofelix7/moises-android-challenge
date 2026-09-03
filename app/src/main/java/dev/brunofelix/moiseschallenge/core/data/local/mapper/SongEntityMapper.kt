@@ -11,7 +11,8 @@ fun SongEntity.toDomain(): Song {
         coverUrl = coverUrl,
         audioUrl = audioUrl,
         durationMillis = durationMillis,
-        albumId = albumId
+        albumId = albumId,
+        lastPlayedAt = lastPlayedAt
     )
 }
 
@@ -24,6 +25,7 @@ fun Song.toEntity(): SongEntity {
         audioUrl = audioUrl,
         durationMillis = durationMillis,
         albumId = albumId ?: 0L,
-        playedAt = System.currentTimeMillis()
+        playedAt = System.currentTimeMillis(),
+        lastPlayedAt = lastPlayedAt
     )
 }
