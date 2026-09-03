@@ -44,4 +44,19 @@ interface SongRepository {
      * @return A flow of lists of recently played songs.
      */
     fun observeRecentlyPlayed(): Flow<List<Song>>
+
+    /**
+     * Updates the last played timestamp for a specific song in the local database.
+     *
+     * @param id The ID of the song to update.
+     * @param lastPlayedAt The new last played timestamp.
+     */
+    suspend fun updateLastPlayedAt(id: Long, lastPlayedAt: Long)
+
+    /**
+     * Retrieves the last played song from the local database.
+     *
+     * @return The last played song, or null if no song has been played.
+     */
+    fun getLastPlayedSong(): Flow<Song?>
 }

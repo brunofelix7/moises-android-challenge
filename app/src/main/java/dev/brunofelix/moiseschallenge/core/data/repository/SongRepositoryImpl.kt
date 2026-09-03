@@ -29,4 +29,12 @@ class SongRepositoryImpl @Inject constructor(
     override fun observeRecentlyPlayed(): Flow<List<Song>> {
         return localDataSource.getRecentSongs()
     }
+
+    override suspend fun updateLastPlayedAt(id: Long, lastPlayedAt: Long) {
+        localDataSource.updateLastPlayedAt(id, lastPlayedAt)
+    }
+
+    override fun getLastPlayedSong(): Flow<Song?> {
+        return localDataSource.getLastPlayedSong()
+    }
 }
