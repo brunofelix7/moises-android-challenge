@@ -48,4 +48,22 @@ interface SongDao {
      */
     @Query("SELECT * FROM recent_songs WHERE id = :id LIMIT 1")
     suspend fun findById(id: Long): SongEntity?
+
+    /**
+     * Updates the last played timestamp for a specific song in the 'recent_songs' table.
+     *
+     * @param id The ID of the song to update.
+     * @param lastPlayedAt The new last played timestamp.
+     * @return The number of rows updated.
+     */
+    @Query("UPDATE recent_songs SET lastPlayedAt = :lastPlayedAt WHERE id = :id")
+    suspend fun updateLastPlayedAt(id: Long, lastPlayedAt: Long)
+
+    /**
+     * Retrieves the last played song from the 'recent_songs' table.
+     *
+     * @return The last played song entity, or null if no song has been played.
+     */
+    @Query("SELECT * FROM recent_songs ORDER BY lastPlayedAt DESC LIMIT 1")
+    fun getLastPlayedSong(): Flow<SongEntity?>
 }
