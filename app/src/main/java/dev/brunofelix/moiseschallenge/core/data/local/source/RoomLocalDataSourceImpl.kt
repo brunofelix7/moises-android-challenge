@@ -31,4 +31,14 @@ class RoomLocalDataSourceImpl @Inject constructor(
         }
         return dao.insert(song.toEntity())
     }
+
+    override suspend fun updateLastPlayedAt(id: Long, lastPlayedAt: Long) {
+        dao.updateLastPlayedAt(id, lastPlayedAt)
+    }
+
+    override fun getLastPlayedSong(): Flow<Song?> {
+        return dao.getLastPlayedSong().map { entity ->
+            entity?.toDomain()
+        }
+    }
 }
