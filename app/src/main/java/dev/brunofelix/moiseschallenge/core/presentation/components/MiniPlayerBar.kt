@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +33,9 @@ import dev.brunofelix.moiseschallenge.core.domain.model.Song
 import dev.brunofelix.moiseschallenge.core.domain.util.extension.toItunesImageSize
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.extraSmallSpacing
-import dev.brunofelix.moiseschallenge.core.presentation.design_system.sheetBackgroundColor
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.greenColor
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.sliderDarkGrayColor
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.sliderLightGrayColor
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.smallSpacing
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.spacing16
 
@@ -41,21 +44,37 @@ fun MiniPlayerBar(
     modifier: Modifier = Modifier,
     song: Song,
     isPlaying: Boolean,
+    currentPosition: Long = 0L,
+    totalDuration: Long = 0L,
     onClick: () -> Unit,
     onPlay: () -> Unit
 ) {
+    val progress = if (totalDuration > 0L) {
+        (currentPosition.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
+    } else {
+        0f
+    }
+
     Box(
         modifier = modifier
             .clickable(onClick = onClick)
-            .background(sheetBackgroundColor)
-            .navigationBarsPadding()
-            .padding(horizontal = 16.dp),
-        contentAlignment = Alignment.Center,
+            .background(greenColor)
+            .navigationBarsPadding(),
+        contentAlignment = Alignment.TopCenter,
     ) {
+        LinearProgressIndicator(
+            progress = { progress },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(2.dp),
+            color = sliderLightGrayColor,
+            trackColor = sliderDarkGrayColor
+        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(68.dp),
+                .height(68.dp)
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             AppAsyncImage(
@@ -79,7 +98,7 @@ fun MiniPlayerBar(
                 Text(
                     text = song.artist,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -97,7 +116,6 @@ fun MiniPlayerBar(
                 )
             }
         }
-        // TODO: Slider
     }
 }
 
@@ -112,6 +130,8 @@ private fun Preview() {
                 artist = "Linkin Park"
             ),
             isPlaying = true,
+            currentPosition = 30000L,
+            totalDuration = 180000L,
             onClick = {},
             onPlay = {}
         )
