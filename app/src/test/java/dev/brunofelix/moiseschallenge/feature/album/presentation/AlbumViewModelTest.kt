@@ -20,6 +20,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -108,6 +109,43 @@ class AlbumViewModelTest : DescribeSpec({
                 coEvery { saveRecentSongUseCase(mockSong) } returns Unit
 
                 viewModel.onTrackPlayed(mockSong)
+
+                coVerify(exactly = 1) { saveRecentSongUseCase(mockSong) }
+                coVerify(exactly = 1) { updateLastPlayedSong(mockSong.id) }
+                coVerify(exactly = 1) { playerController.play(mockSong) }
+            }
+        }
+    }
+
+    describe("onAction") {
+        it("should emit NavigateBack event on OnBack action") {
+            runTest(testDispatcher) {
+                val events = mutableListOf<AlbumUiEvent>()
+                val eventJob = backgroundScope.launch { viewModel.uiEvent.collect { events.add(it) } }
+
+                viewModel.onAction(AlbumUiAction.OnBack)
+                events shouldBe listOf(AlbumUiEvent.NavigateBack)
+
+                eventJob.cancel()
+            }
+        }
+
+        it("should reload album on OnLoadAlbum action when currentAlbumId is set") {
+            runTest(testDispatcher) {
+                coEvery { getAlbumByIdUseCase(1L) } returns Resource.Success(mockAlbum)
+
+                viewModel.loadAlbum(1L)
+                viewModel.onAction(AlbumUiAction.OnLoadAlbum)
+
+                viewModel.uiState.value shouldBe UiState.Success(mockAlbum)
+            }
+        }
+
+        it("should call onTrackPlayed on OnTrackClick action") {
+            runTest(testDispatcher) {
+                coEvery { saveRecentSongUseCase(mockSong) } returns Unit
+
+                viewModel.onAction(AlbumUiAction.OnTrackClick(mockSong))
 
                 coVerify(exactly = 1) { saveRecentSongUseCase(mockSong) }
                 coVerify(exactly = 1) { updateLastPlayedSong(mockSong.id) }

@@ -30,6 +30,7 @@ import dev.brunofelix.moiseschallenge.core.presentation.components.SongItem
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.extraLargeSpacing
 import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
+import dev.brunofelix.moiseschallenge.core.presentation.util.ObserveAsEvents
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiText
 import dev.brunofelix.moiseschallenge.feature.album.presentation.components.AlbumHeader
@@ -43,26 +44,25 @@ internal fun AlbumRoute(
     viewModel: AlbumViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val onAction = viewModel::onAction
 
     BackHandler(enabled = true) {
-        onBack()
+        onAction(AlbumUiAction.OnBack)
     }
 
-    LaunchedEffect(Unit) {
+    ObserveAsEvents(viewModel.uiEvent) { event ->
+        when (event) {
+            AlbumUiEvent.NavigateBack -> onBack()
+        }
+    }
+
+    LaunchedEffect(albumId) {
         viewModel.loadAlbum(albumId)
     }
 
     AlbumScreen(
         uiState = uiState,
-        onAction = { action ->
-            when (action) {
-                AlbumUiAction.OnBack -> onBack()
-                AlbumUiAction.OnLoadAlbum -> viewModel.loadAlbum(albumId)
-                is AlbumUiAction.OnTrackClick -> {
-                    viewModel.onTrackPlayed(action.song)
-                }
-            }
-        }
+        onAction = onAction
     )
 }
 

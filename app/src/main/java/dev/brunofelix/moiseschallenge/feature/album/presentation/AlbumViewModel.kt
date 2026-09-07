@@ -12,8 +12,10 @@ import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
 import dev.brunofelix.moiseschallenge.core.presentation.util.extension.toUiText
 import dev.brunofelix.moiseschallenge.feature.album.domain.use_case.GetAlbumByIdUseCase
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SaveRecentSongUseCase
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,6 +27,9 @@ class AlbumViewModel @Inject constructor(
     private val updateLastPlayedSong: UpdateLastPlayedSongUseCase,
     private val playerController: PlayerController
 ) : ViewModel() {
+
+    private val _uiEvent = Channel<AlbumUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _uiState = MutableStateFlow<UiState<Album>>(UiState.Initial)
     val uiState = _uiState.asStateFlow()
@@ -68,6 +73,22 @@ class AlbumViewModel @Inject constructor(
             saveRecentSongUseCase(song)
             updateLastPlayedSong(song.id)
             playerController.play(song)
+        }
+    }
+
+    fun onAction(action: AlbumUiAction) {
+        when (action) {
+            AlbumUiAction.OnBack -> {
+                viewModelScope.launch {
+                    _uiEvent.send(AlbumUiEvent.NavigateBack)
+                }
+            }
+            AlbumUiAction.OnLoadAlbum -> {
+                currentAlbumId?.let { loadAlbum(it) }
+            }
+            is AlbumUiAction.OnTrackClick -> {
+                onTrackPlayed(action.song)
+            }
         }
     }
 }
