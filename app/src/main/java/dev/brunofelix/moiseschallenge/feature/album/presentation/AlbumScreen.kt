@@ -60,7 +60,6 @@ internal fun AlbumRoute(
                 AlbumUiAction.OnLoadAlbum -> viewModel.loadAlbum(albumId)
                 is AlbumUiAction.OnTrackClick -> {
                     viewModel.onTrackPlayed(action.song)
-                    onReplace(Route.Player(action.song.id))
                 }
             }
         }
