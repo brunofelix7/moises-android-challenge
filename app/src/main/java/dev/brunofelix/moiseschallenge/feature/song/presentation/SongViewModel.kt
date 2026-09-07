@@ -14,6 +14,7 @@ import dev.brunofelix.moiseschallenge.core.domain.util.fold
 import dev.brunofelix.moiseschallenge.core.presentation.util.LocalPagingSource
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
 import dev.brunofelix.moiseschallenge.core.presentation.util.extension.toUiText
+import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.DeleteRecentSongUseCase
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.GetRecentlyPlayedSongsUseCase
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SaveRecentSongUseCase
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SearchSongsUseCase
@@ -46,6 +47,7 @@ class SongViewModel @Inject constructor(
     private val searchSongsUseCase: SearchSongsUseCase,
     private val saveRecentSongUseCase: SaveRecentSongUseCase,
     private val updateLastPlayedSong: UpdateLastPlayedSongUseCase,
+    private val deleteRecentSongUseCase: DeleteRecentSongUseCase,
     private val playerController: PlayerController
 ) : ViewModel() {
 
@@ -166,6 +168,19 @@ class SongViewModel @Inject constructor(
             saveRecentSongUseCase(song)
             updateLastPlayedSong(song.id)
             playerController.play(song)
+        }
+    }
+
+    /**
+     * Deletes a recent song from the database.
+     * @param song The song to delete.
+     */
+    fun onDeleteRecentSong(song: Song) {
+        viewModelScope.launch {
+            if (playerController.currentAudioUrl == song.audioUrl) {
+                playerController.stop()
+            }
+            deleteRecentSongUseCase(song.id)
         }
     }
 }

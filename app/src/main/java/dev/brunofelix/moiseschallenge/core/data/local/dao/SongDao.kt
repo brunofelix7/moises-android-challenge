@@ -24,6 +24,14 @@ interface SongDao {
     suspend fun insert(song: SongEntity): Long
 
     /**
+     * Deletes a song from the 'recent_songs' table by its ID.
+     *
+     * @param id The ID of the song to delete.
+     */
+    @Query("DELETE FROM recent_songs WHERE id = :id")
+    suspend fun delete(id: Long)
+
+    /**
      * Retrieves the most recent 50 songs from the 'recent_songs' table.
      *
      * @return A flow emitting a list of the most recent 50 songs.

@@ -13,6 +13,7 @@ interface PlayerController {
     val duration: Flow<Long>
     val repeatMode: Flow<PlayerRepeatMode>
     val hasMediaItem: Boolean
+    val currentAudioUrl: String?
 
     /**
      * Loads and plays a new song.

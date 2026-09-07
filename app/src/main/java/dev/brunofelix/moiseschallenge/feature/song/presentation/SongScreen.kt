@@ -85,6 +85,9 @@ internal fun SongRoute(
                     selectedSong = action.song
                     isSheetVisible = true
                 }
+                is SongUiAction.OnDeleteRecentSong -> {
+                    viewModel.onDeleteRecentSong(action.song)
+                }
             }
         }
     )
@@ -156,6 +159,9 @@ internal fun SongScreen(
                     },
                     onAlbumClick = { song ->
                         onAction(SongUiAction.OnAlbumClick(song))
+                    },
+                    onDelete = { song ->
+                        onAction(SongUiAction.OnDeleteRecentSong(song))
                     }
                 )
                 SearchOverlay(

@@ -36,6 +36,9 @@ class ExoPlayerControllerImpl @Inject constructor(
     override val hasMediaItem: Boolean
         get() = exoPlayer.currentMediaItem != null
 
+    override val currentAudioUrl: String?
+        get() = exoPlayer.currentMediaItem?.localConfiguration?.uri?.toString()
+
     private val _repeatMode = MutableStateFlow(PlayerRepeatMode.OFF)
     override val repeatMode = _repeatMode.asStateFlow()
 

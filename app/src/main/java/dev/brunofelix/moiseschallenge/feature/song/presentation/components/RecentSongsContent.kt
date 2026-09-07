@@ -1,5 +1,7 @@
 package dev.brunofelix.moiseschallenge.feature.song.presentation.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,8 +14,15 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.LibraryMusic
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import dev.brunofelix.moiseschallenge.R
@@ -25,11 +34,13 @@ import dev.brunofelix.moiseschallenge.core.presentation.design_system.largeSpaci
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.spacing16
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun RecentSongsContent(
     uiState: UiState<List<Song>>,
     onSongClick: (Song) -> Unit,
     onAlbumClick: (Song) -> Unit,
+    onDelete: (Song) -> Unit,
     modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState()
 ) {
@@ -65,12 +76,35 @@ internal fun RecentSongsContent(
                 ) {
                     items(
                         items = uiState.data,
-                        key = { it.id }) { song ->
+                        key = { it.id }
+                    ) { song ->
+                        val dismissState = rememberSwipeToDismissBoxState()
+                        LaunchedEffect(dismissState.currentValue) {
+                            if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart || dismissState.currentValue == SwipeToDismissBoxValue.StartToEnd) {
+                                onDelete(song)
+                            }
+                        }
+                        SwipeToDismissBox(
+                            state = dismissState,
+                            backgroundContent = {
+                                val color = when (dismissState.dismissDirection) {
+                                    SwipeToDismissBoxValue.StartToEnd,
+                                    SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.errorContainer
+                                    SwipeToDismissBoxValue.Settled -> Color.Transparent
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(color)
+                                )
+                            }
+                        ) {
                             SongItem(
                                 song = song,
                                 onAction = { song.albumId?.let { id -> onAlbumClick(song) } },
                                 onClick = { onSongClick(song) }
                             )
+                        }
                     }
                 }
             }

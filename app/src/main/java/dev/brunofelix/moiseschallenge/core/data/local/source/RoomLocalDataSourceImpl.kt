@@ -32,6 +32,10 @@ class RoomLocalDataSourceImpl @Inject constructor(
         return dao.insert(song.toEntity())
     }
 
+    override suspend fun deleteRecentSong(id: Long) {
+        dao.delete(id)
+    }
+
     override suspend fun updateLastPlayedAt(id: Long, lastPlayedAt: Long) {
         dao.updateLastPlayedAt(id, lastPlayedAt)
     }

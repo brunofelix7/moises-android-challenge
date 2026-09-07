@@ -22,6 +22,10 @@ class SongRepositoryImpl @Inject constructor(
         return localDataSource.saveRecentSong(song)
     }
 
+    override suspend fun deleteRecent(id: Long) {
+        localDataSource.deleteRecentSong(id)
+    }
+
     override fun observeById(id: Long): Flow<Song?> {
         return localDataSource.observeSongById(id)
     }

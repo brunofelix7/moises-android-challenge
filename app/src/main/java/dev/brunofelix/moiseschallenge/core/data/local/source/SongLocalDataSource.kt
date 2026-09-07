@@ -31,6 +31,13 @@ interface SongLocalDataSource {
     suspend fun saveRecentSong(song: Song): Long
 
     /**
+     * Deletes a recent song by its ID.
+     *
+     * @param id The ID of the song to delete.
+     */
+    suspend fun deleteRecentSong(id: Long)
+
+    /**
      * Updates the last played timestamp for a specific song.
      *
      * @param id The ID of the song to update.

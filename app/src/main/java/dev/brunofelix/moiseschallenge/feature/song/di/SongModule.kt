@@ -4,6 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.DeleteRecentSongUseCase
+import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.DeleteRecentSongUseCaseImpl
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.GetRecentlyPlayedSongsUseCase
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.GetRecentlyPlayedSongsUseCaseImpl
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SaveRecentSongUseCase
@@ -29,4 +31,9 @@ abstract class SongModule {
     abstract fun bindSaveRecentSongUseCase(
         impl: SaveRecentSongUseCaseImpl
     ): SaveRecentSongUseCase
+
+    @Binds
+    abstract fun bindDeleteRecentSongUseCase(
+        impl: DeleteRecentSongUseCaseImpl
+    ): DeleteRecentSongUseCase
 }

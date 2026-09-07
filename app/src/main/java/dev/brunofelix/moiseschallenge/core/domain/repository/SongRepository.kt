@@ -29,6 +29,13 @@ interface SongRepository {
     suspend fun saveRecent(song: Song) : Long
 
     /**
+     * Deletes a recent song from the local database by its ID.
+     *
+     * @param id The ID of the song to delete.
+     */
+    suspend fun deleteRecent(id: Long)
+
+    /**
      * Observes a specific song from the local database by its ID.
      * Perfect for the Player screen to maintain Single Source of Truth.
      *
