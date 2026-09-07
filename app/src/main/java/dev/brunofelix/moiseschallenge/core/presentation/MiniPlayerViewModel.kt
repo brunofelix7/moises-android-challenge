@@ -34,7 +34,14 @@ class MiniPlayerViewModel @Inject constructor(
     val currentPosition = playerController.currentPosition
     val duration = playerController.duration
 
-    fun resume() = playerController.resume()
+    fun resume() {
+        val lastSong = (uiState.value as? UiState.Success)?.data
+        if (!playerController.hasMediaItem && lastSong != null) {
+            playerController.play(lastSong)
+        } else {
+            playerController.resume()
+        }
+    }
 
     fun pause() = playerController.pause()
 }
