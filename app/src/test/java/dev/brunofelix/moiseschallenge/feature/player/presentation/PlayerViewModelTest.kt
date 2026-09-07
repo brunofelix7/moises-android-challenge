@@ -153,4 +153,63 @@ class PlayerViewModelTest : DescribeSpec({
             }
         }
     }
+
+    describe("onAction") {
+        it("should update isSheetVisible state on OnActionClick and OnDismissSheet") {
+            runTest(testDispatcher) {
+                val job = backgroundScope.launch { viewModel.uiState.collect() }
+                viewModel.uiState.value.isSheetVisible shouldBe false
+
+                viewModel.onAction(PlayerUiAction.OnActionClick)
+                viewModel.uiState.value.isSheetVisible shouldBe true
+
+                viewModel.onAction(PlayerUiAction.OnDismissSheet)
+                viewModel.uiState.value.isSheetVisible shouldBe false
+
+                job.cancel()
+            }
+        }
+
+        it("should handle OnPlayPause action") {
+            runTest(testDispatcher) {
+                val job = backgroundScope.launch { viewModel.uiState.collect() }
+                viewModel.onAction(PlayerUiAction.OnPlayPause)
+                verify(exactly = 1) { playerController.resume() }
+                job.cancel()
+            }
+        }
+
+        it("should emit NavigateBack event on OnBack action") {
+            runTest(testDispatcher) {
+                val events = mutableListOf<PlayerUiEvent>()
+                val eventJob = backgroundScope.launch { viewModel.uiEvent.collect { events.add(it) } }
+
+                viewModel.onAction(PlayerUiAction.OnBack)
+                events shouldBe listOf(PlayerUiEvent.NavigateBack)
+
+                eventJob.cancel()
+            }
+        }
+
+        it("should emit NavigateToAlbum event on OnViewAlbumClick action when song has albumId") {
+            runTest(testDispatcher) {
+                val playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Playing)
+                every { playerController.playerState } returns playerStateFlow.asStateFlow()
+                every { getSavedSongByIdUseCase(1L) } returns flowOf(mockSong.copy(albumId = 42L))
+
+                val testVm = PlayerViewModel(getSavedSongByIdUseCase, playerController)
+                val stateJob = backgroundScope.launch { testVm.uiState.collect() }
+                val events = mutableListOf<PlayerUiEvent>()
+                val eventJob = backgroundScope.launch { testVm.uiEvent.collect { events.add(it) } }
+
+                testVm.init(1L)
+                testVm.onAction(PlayerUiAction.OnViewAlbumClick)
+
+                events shouldBe listOf(PlayerUiEvent.NavigateToAlbum(42L))
+
+                stateJob.cancel()
+                eventJob.cancel()
+            }
+        }
+    }
 })

@@ -1,6 +1,6 @@
 package dev.brunofelix.moiseschallenge.feature.player.presentation
 
-internal sealed interface PlayerUiAction {
+sealed interface PlayerUiAction {
     data object OnPlayPause : PlayerUiAction
     data object OnPrevious : PlayerUiAction
     data object OnNext : PlayerUiAction

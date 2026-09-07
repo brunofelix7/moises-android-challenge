@@ -9,9 +9,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -23,6 +20,7 @@ import dev.brunofelix.moiseschallenge.core.presentation.components.AppTopBar
 import dev.brunofelix.moiseschallenge.core.presentation.components.SongActionSheet
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
+import dev.brunofelix.moiseschallenge.core.presentation.util.ObserveAsEvents
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerLandscapeContent
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerPortraitContent
 import dev.brunofelix.moiseschallenge.feature.player.presentation.components.PlayerSkeleton
@@ -35,11 +33,17 @@ internal fun PlayerRoute(
     viewModel: PlayerViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var isSheetVisible by remember { mutableStateOf(false) }
-    val currentUiState = uiState.copy(isSheetVisible = isSheetVisible)
+    val onAction = viewModel::onAction
 
     BackHandler(enabled = true) {
-        onBack()
+        onAction(PlayerUiAction.OnBack)
+    }
+
+    ObserveAsEvents(viewModel.uiEvent) { event ->
+        when (event) {
+            is PlayerUiEvent.NavigateBack -> onBack()
+            is PlayerUiEvent.NavigateToAlbum -> onReplace(Route.Album(event.albumId))
+        }
     }
 
     LaunchedEffect(songId) {
@@ -47,27 +51,8 @@ internal fun PlayerRoute(
     }
 
     PlayerScreen(
-        uiState = currentUiState,
-        onAction = { action ->
-            when (action) {
-                PlayerUiAction.OnPlayPause -> {
-                    if (currentUiState.isPlaying) viewModel.pause() else viewModel.resume()
-                }
-                PlayerUiAction.OnPrevious -> viewModel.moveBackward()
-                PlayerUiAction.OnNext -> viewModel.moveForward()
-                is PlayerUiAction.OnSeek -> viewModel.seekTo(action.position.toLong())
-                PlayerUiAction.OnToggleRepeat -> viewModel.toggleRepeatMode()
-                PlayerUiAction.OnBack -> onBack()
-                PlayerUiAction.OnActionClick -> isSheetVisible = true
-                PlayerUiAction.OnDismissSheet -> isSheetVisible = false
-                PlayerUiAction.OnViewAlbumClick -> {
-                    isSheetVisible = false
-                    currentUiState.song?.albumId?.let { albumId ->
-                        onReplace(Route.Album(albumId))
-                    }
-                }
-            }
-        }
+        uiState = uiState,
+        onAction = onAction
     )
 }
 
