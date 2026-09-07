@@ -9,5 +9,6 @@ data class Song(
     val albumName: String? = null,
     val coverUrl: String = "",
     val audioUrl: String = "",
-    val durationMillis: Long = 0L
+    val durationMillis: Long = 0L,
+    val lastPlayedAt: Long = 0L
 )

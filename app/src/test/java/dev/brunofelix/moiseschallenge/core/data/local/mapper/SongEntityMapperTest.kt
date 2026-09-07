@@ -19,7 +19,8 @@ class SongEntityMapperTest : DescribeSpec({
                 audioUrl = "audio",
                 durationMillis = 1000L,
                 albumId = 10L,
-                playedAt = 123456789L
+                playedAt = 123456789L,
+                lastPlayedAt = 123456789L
             )
 
             // Act

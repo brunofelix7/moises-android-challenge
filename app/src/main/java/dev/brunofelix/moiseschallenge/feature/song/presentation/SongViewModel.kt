@@ -8,10 +8,13 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.brunofelix.moiseschallenge.core.domain.model.Song
+import dev.brunofelix.moiseschallenge.core.domain.player.PlayerController
+import dev.brunofelix.moiseschallenge.core.domain.use_case.UpdateLastPlayedSongUseCase
 import dev.brunofelix.moiseschallenge.core.domain.util.fold
 import dev.brunofelix.moiseschallenge.core.presentation.util.LocalPagingSource
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
 import dev.brunofelix.moiseschallenge.core.presentation.util.extension.toUiText
+import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.DeleteRecentSongUseCase
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.GetRecentlyPlayedSongsUseCase
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SaveRecentSongUseCase
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SearchSongsUseCase
@@ -42,7 +45,10 @@ import kotlin.time.Duration.Companion.milliseconds
 class SongViewModel @Inject constructor(
     getRecentlyPlayedSongsUseCase: GetRecentlyPlayedSongsUseCase,
     private val searchSongsUseCase: SearchSongsUseCase,
-    private val saveRecentSongUseCase: SaveRecentSongUseCase
+    private val saveRecentSongUseCase: SaveRecentSongUseCase,
+    private val updateLastPlayedSong: UpdateLastPlayedSongUseCase,
+    private val deleteRecentSongUseCase: DeleteRecentSongUseCase,
+    private val playerController: PlayerController
 ) : ViewModel() {
 
     private val _uiEvent = Channel<SongUiEvent>()
@@ -160,6 +166,21 @@ class SongViewModel @Inject constructor(
     fun onSongPlayed(song: Song) {
         viewModelScope.launch {
             saveRecentSongUseCase(song)
+            updateLastPlayedSong(song.id)
+            playerController.play(song)
+        }
+    }
+
+    /**
+     * Deletes a recent song from the database.
+     * @param song The song to delete.
+     */
+    fun onDeleteRecentSong(song: Song) {
+        viewModelScope.launch {
+            if (playerController.currentAudioUrl == song.audioUrl) {
+                playerController.stop()
+            }
+            deleteRecentSongUseCase(song.id)
         }
     }
 }

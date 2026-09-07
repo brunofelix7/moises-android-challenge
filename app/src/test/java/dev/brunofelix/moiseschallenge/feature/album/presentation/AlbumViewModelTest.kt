@@ -3,6 +3,8 @@ package dev.brunofelix.moiseschallenge.feature.album.presentation
 import dev.brunofelix.moiseschallenge.R
 import dev.brunofelix.moiseschallenge.core.domain.model.Album
 import dev.brunofelix.moiseschallenge.core.domain.model.Song
+import dev.brunofelix.moiseschallenge.core.domain.player.PlayerController
+import dev.brunofelix.moiseschallenge.core.domain.use_case.UpdateLastPlayedSongUseCase
 import dev.brunofelix.moiseschallenge.core.domain.util.Resource
 import dev.brunofelix.moiseschallenge.core.domain.util.exception.RemoteException
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
@@ -14,6 +16,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,6 +31,8 @@ class AlbumViewModelTest : DescribeSpec({
     val testDispatcher = UnconfinedTestDispatcher()
     val getAlbumByIdUseCase = mockk<GetAlbumByIdUseCase>()
     val saveRecentSongUseCase = mockk<SaveRecentSongUseCase>()
+    val updateLastPlayedSong = mockk<UpdateLastPlayedSongUseCase>()
+    val playerController = mockk<PlayerController>()
     lateinit var viewModel: AlbumViewModel
 
     val mockSong = Song(
@@ -58,7 +63,9 @@ class AlbumViewModelTest : DescribeSpec({
 
     beforeTest {
         clearAllMocks()
-        viewModel = AlbumViewModel(getAlbumByIdUseCase, saveRecentSongUseCase)
+        coEvery { updateLastPlayedSong(any()) } returns Unit
+        every { playerController.play(any()) } returns Unit
+        viewModel = AlbumViewModel(getAlbumByIdUseCase, saveRecentSongUseCase, updateLastPlayedSong, playerController)
     }
 
     describe("loadAlbum") {
@@ -96,13 +103,15 @@ class AlbumViewModelTest : DescribeSpec({
     }
 
     describe("onTrackPlayed") {
-        it("should call saveRecentSongUseCase") {
+        it("should call saveRecentSongUseCase, updateLastPlayedSong and play the track") {
             runTest(testDispatcher) {
                 coEvery { saveRecentSongUseCase(mockSong) } returns Unit
 
                 viewModel.onTrackPlayed(mockSong)
 
                 coVerify(exactly = 1) { saveRecentSongUseCase(mockSong) }
+                coVerify(exactly = 1) { updateLastPlayedSong(mockSong.id) }
+                coVerify(exactly = 1) { playerController.play(mockSong) }
             }
         }
     }

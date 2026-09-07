@@ -8,4 +8,5 @@ internal sealed interface SongUiAction {
     data object OnRetrySearch : SongUiAction
     data class OnSongClick(val song: Song) : SongUiAction
     data class OnAlbumClick(val song: Song) : SongUiAction
+    data class OnDeleteRecentSong(val song: Song) : SongUiAction
 }

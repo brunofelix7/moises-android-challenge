@@ -2,9 +2,12 @@ package dev.brunofelix.moiseschallenge.feature.song.presentation
 
 import dev.brunofelix.moiseschallenge.R
 import dev.brunofelix.moiseschallenge.core.domain.model.Song
+import dev.brunofelix.moiseschallenge.core.domain.player.PlayerController
+import dev.brunofelix.moiseschallenge.core.domain.use_case.UpdateLastPlayedSongUseCase
 import dev.brunofelix.moiseschallenge.core.domain.util.Resource
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiText
+import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.DeleteRecentSongUseCase
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.GetRecentlyPlayedSongsUseCase
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SaveRecentSongUseCase
 import dev.brunofelix.moiseschallenge.feature.song.domain.use_case.SearchSongsUseCase
@@ -16,6 +19,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -39,6 +43,9 @@ class SongViewModelTest : DescribeSpec({
     val getRecentlyPlayedSongsUseCase = mockk<GetRecentlyPlayedSongsUseCase>()
     val searchSongsUseCase = mockk<SearchSongsUseCase>()
     val saveRecentSongUseCase = mockk<SaveRecentSongUseCase>()
+    val updateLastPlayedSong = mockk<UpdateLastPlayedSongUseCase>()
+    val deleteRecentSongUseCase = mockk<DeleteRecentSongUseCase>()
+    val playerController = mockk<PlayerController>(relaxed = true)
     lateinit var viewModel: SongViewModel
 
     val mockSong = Song(
@@ -62,7 +69,8 @@ class SongViewModelTest : DescribeSpec({
     beforeTest {
         clearAllMocks()
         every { getRecentlyPlayedSongsUseCase() } returns flowOf(emptyList())
-        viewModel = SongViewModel(getRecentlyPlayedSongsUseCase, searchSongsUseCase, saveRecentSongUseCase)
+        coEvery { updateLastPlayedSong(any()) } returns Unit
+        viewModel = SongViewModel(getRecentlyPlayedSongsUseCase, searchSongsUseCase, saveRecentSongUseCase, updateLastPlayedSong, deleteRecentSongUseCase, playerController)
     }
 
     describe("recentlyPlayedSongs") {
@@ -70,7 +78,7 @@ class SongViewModelTest : DescribeSpec({
             runTest(testDispatcher) {
                 val mockSongs = listOf(mockSong)
                 every { getRecentlyPlayedSongsUseCase() } returns flowOf(mockSongs)
-                val vm = SongViewModel(getRecentlyPlayedSongsUseCase, searchSongsUseCase, saveRecentSongUseCase)
+                val vm = SongViewModel(getRecentlyPlayedSongsUseCase, searchSongsUseCase, saveRecentSongUseCase, updateLastPlayedSong, deleteRecentSongUseCase, playerController)
                 val job = backgroundScope.launch { vm.recentlyPlayedSongs.collect() }
                 
                 vm.recentlyPlayedSongs.value shouldBe UiState.Loading
@@ -86,7 +94,7 @@ class SongViewModelTest : DescribeSpec({
         it("should emit Empty when use case emits empty list") {
             runTest(testDispatcher) {
                 every { getRecentlyPlayedSongsUseCase() } returns flowOf(emptyList())
-                val vm = SongViewModel(getRecentlyPlayedSongsUseCase, searchSongsUseCase, saveRecentSongUseCase)
+                val vm = SongViewModel(getRecentlyPlayedSongsUseCase, searchSongsUseCase, saveRecentSongUseCase, updateLastPlayedSong, deleteRecentSongUseCase, playerController)
                 val job = backgroundScope.launch { vm.recentlyPlayedSongs.collect() }
                 
                 advanceTimeBy(501.milliseconds)
@@ -103,7 +111,7 @@ class SongViewModelTest : DescribeSpec({
                 val song2 = mockSong.copy(id = 2L)
                 val flow = MutableSharedFlow<List<Song>>(replay = 1)
                 every { getRecentlyPlayedSongsUseCase() } returns flow
-                val vm = SongViewModel(getRecentlyPlayedSongsUseCase, searchSongsUseCase, saveRecentSongUseCase)
+                val vm = SongViewModel(getRecentlyPlayedSongsUseCase, searchSongsUseCase, saveRecentSongUseCase, updateLastPlayedSong, deleteRecentSongUseCase, playerController)
                 val events = mutableListOf<SongUiEvent>()
                 val eventJob = backgroundScope.launch { vm.uiEvent.collect { events.add(it) } }
                 val stateJob = backgroundScope.launch { vm.recentlyPlayedSongs.collect() }
@@ -192,11 +200,11 @@ class SongViewModelTest : DescribeSpec({
     }
 
     describe("onSongPlayed") {
-        it("should call saveRecentSongUseCase when song is played") {
+        it("should call saveRecentSongUseCase and updateLastPlayedSong when song is played") {
             runTest(testDispatcher) {
                 every { getRecentlyPlayedSongsUseCase() } returns flowOf(emptyList())
                 coEvery { saveRecentSongUseCase(mockSong) } returns Unit
-                val vm = SongViewModel(getRecentlyPlayedSongsUseCase, searchSongsUseCase, saveRecentSongUseCase)
+                val vm = SongViewModel(getRecentlyPlayedSongsUseCase, searchSongsUseCase, saveRecentSongUseCase, updateLastPlayedSong, deleteRecentSongUseCase, playerController)
                 val job = backgroundScope.launch { vm.recentlyPlayedSongs.collect() }
                 
                 advanceTimeBy(501.milliseconds)
@@ -206,7 +214,35 @@ class SongViewModelTest : DescribeSpec({
                 advanceUntilIdle()
 
                 coVerify(exactly = 1) { saveRecentSongUseCase(mockSong) }
+                coVerify(exactly = 1) { updateLastPlayedSong(mockSong.id) }
+                coVerify(exactly = 1) { playerController.play(mockSong) }
                 job.cancel()
+            }
+        }
+    }
+
+    describe("onDeleteRecentSong") {
+        it("should call deleteRecentSongUseCase and stop player if song is currently playing") {
+            runTest(testDispatcher) {
+                every { playerController.currentAudioUrl } returns mockSong.audioUrl
+                coEvery { deleteRecentSongUseCase(mockSong.id) } returns Unit
+                viewModel.onDeleteRecentSong(mockSong)
+                advanceUntilIdle()
+
+                coVerify(exactly = 1) { deleteRecentSongUseCase(mockSong.id) }
+                verify(exactly = 1) { playerController.stop() }
+            }
+        }
+
+        it("should call deleteRecentSongUseCase without stopping player if song is not playing") {
+            runTest(testDispatcher) {
+                every { playerController.currentAudioUrl } returns "other_url"
+                coEvery { deleteRecentSongUseCase(mockSong.id) } returns Unit
+                viewModel.onDeleteRecentSong(mockSong)
+                advanceUntilIdle()
+
+                coVerify(exactly = 1) { deleteRecentSongUseCase(mockSong.id) }
+                verify(exactly = 0) { playerController.stop() }
             }
         }
     }
