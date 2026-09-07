@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.brunofelix.moiseschallenge.core.domain.model.Song
+import dev.brunofelix.moiseschallenge.core.domain.use_case.UpdateLastPlayedSongUseCase
 import dev.brunofelix.moiseschallenge.core.domain.util.fold
 import dev.brunofelix.moiseschallenge.core.presentation.util.LocalPagingSource
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
@@ -42,7 +43,8 @@ import kotlin.time.Duration.Companion.milliseconds
 class SongViewModel @Inject constructor(
     getRecentlyPlayedSongsUseCase: GetRecentlyPlayedSongsUseCase,
     private val searchSongsUseCase: SearchSongsUseCase,
-    private val saveRecentSongUseCase: SaveRecentSongUseCase
+    private val saveRecentSongUseCase: SaveRecentSongUseCase,
+    private val updateLastPlayedSong: UpdateLastPlayedSongUseCase
 ) : ViewModel() {
 
     private val _uiEvent = Channel<SongUiEvent>()
@@ -160,6 +162,7 @@ class SongViewModel @Inject constructor(
     fun onSongPlayed(song: Song) {
         viewModelScope.launch {
             saveRecentSongUseCase(song)
+            updateLastPlayedSong(song.id)
         }
     }
 }
