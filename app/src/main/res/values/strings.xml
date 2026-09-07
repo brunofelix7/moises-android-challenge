@@ -22,6 +22,8 @@
     <string name="search_no_results_body">Try searching for something else</string>
     <string name="album_no_album_title">No album found</string>
     <string name="album_no_album_body">The album you requested could not be found. Try searching for another album</string>
+    <string name="mini_player_empty_title">No song playing</string>
+    <string name="mini_player_empty_artist">Select a song to play</string>
 
     <!-- Error messages -->
     <string name="error_title">Oops!</string>

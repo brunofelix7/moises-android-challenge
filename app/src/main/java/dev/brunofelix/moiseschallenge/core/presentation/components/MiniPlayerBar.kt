@@ -49,7 +49,11 @@ fun MiniPlayerBar(
     onClick: () -> Unit,
     onPlay: () -> Unit
 ) {
-    val progress = if (totalDuration > 0L) {
+    val isEmpty = song.id == 0L || song.title.isBlank()
+    val title = if (isEmpty) stringResource(R.string.mini_player_empty_title) else song.title
+    val artist = if (isEmpty) stringResource(R.string.mini_player_empty_artist) else song.artist
+
+    val progress = if (!isEmpty && totalDuration > 0L) {
         (currentPosition.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
     } else {
         0f
@@ -57,7 +61,7 @@ fun MiniPlayerBar(
 
     Box(
         modifier = modifier
-            .clickable(onClick = onClick)
+            .clickable(enabled = !isEmpty, onClick = onClick)
             .background(greenColor)
             .navigationBarsPadding(),
         contentAlignment = Alignment.TopCenter,
@@ -88,7 +92,7 @@ fun MiniPlayerBar(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = song.title,
+                    text = title,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
@@ -96,14 +100,17 @@ fun MiniPlayerBar(
                 )
                 Spacer(Modifier.height(extraSmallSpacing))
                 Text(
-                    text = song.artist,
+                    text = artist,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = if (isEmpty) 0.7f else 1f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            IconButton(onClick = onPlay) {
+            IconButton(
+                enabled = !isEmpty,
+                onClick = onPlay
+            ) {
                 Icon(
                     painter = if (isPlaying) {
                         painterResource(R.drawable.ic_pause)
@@ -111,7 +118,7 @@ fun MiniPlayerBar(
                         painterResource(R.drawable.ic_play)
                     },
                     contentDescription = stringResource(R.string.cd_play_pause_button),
-                    tint = Color.White,
+                    tint = if (isEmpty) Color.White.copy(alpha = 0.4f) else Color.White,
                     modifier = Modifier.size(36.dp)
                 )
             }
@@ -123,17 +130,26 @@ fun MiniPlayerBar(
 @Composable
 private fun Preview() {
     AppTheme {
-        MiniPlayerBar(
-            song = Song(
-                id = 1,
-                title = "Numb",
-                artist = "Linkin Park"
-            ),
-            isPlaying = true,
-            currentPosition = 30000L,
-            totalDuration = 180000L,
-            onClick = {},
-            onPlay = {}
-        )
+        Column {
+            MiniPlayerBar(
+                song = Song(
+                    id = 1,
+                    title = "Numb",
+                    artist = "Linkin Park"
+                ),
+                isPlaying = true,
+                currentPosition = 30000L,
+                totalDuration = 180000L,
+                onClick = {},
+                onPlay = {}
+            )
+            Spacer(Modifier.height(16.dp))
+            MiniPlayerBar(
+                song = Song(),
+                isPlaying = false,
+                onClick = {},
+                onPlay = {}
+            )
+        }
     }
 }
