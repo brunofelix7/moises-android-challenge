@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.brunofelix.moiseschallenge.core.domain.model.Album
 import dev.brunofelix.moiseschallenge.core.domain.model.Song
+import dev.brunofelix.moiseschallenge.core.domain.player.PlayerController
+import dev.brunofelix.moiseschallenge.core.domain.use_case.UpdateLastPlayedSongUseCase
 import dev.brunofelix.moiseschallenge.core.domain.util.Resource
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
 import dev.brunofelix.moiseschallenge.core.presentation.util.extension.toUiText
@@ -19,7 +21,9 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumViewModel @Inject constructor(
     private val getAlbumByIdUseCase: GetAlbumByIdUseCase,
-    private val saveRecentSongUseCase: SaveRecentSongUseCase
+    private val saveRecentSongUseCase: SaveRecentSongUseCase,
+    private val updateLastPlayedSong: UpdateLastPlayedSongUseCase,
+    private val playerController: PlayerController
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<Album>>(UiState.Initial)
@@ -62,6 +66,8 @@ class AlbumViewModel @Inject constructor(
     fun onTrackPlayed(song: Song) {
         viewModelScope.launch {
             saveRecentSongUseCase(song)
+            updateLastPlayedSong(song.id)
+            playerController.play(song)
         }
     }
 }
