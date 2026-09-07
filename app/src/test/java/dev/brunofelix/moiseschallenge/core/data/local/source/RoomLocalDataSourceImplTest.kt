@@ -25,7 +25,7 @@ class RoomLocalDataSourceImplTest : DescribeSpec({
     describe("getRecentSongs") {
         it("should return flow of songs mapped from entities") {
             // Arrange
-            val entity = SongEntity(1L, "Title", "Artist", "cover", "audio", 1000L, 10L, 123456789L)
+            val entity = SongEntity(1L, "Title", "Artist", "cover", "audio", 1000L, 10L, 123456789L, 123456789L)
             every { dao.getRecentSongs() } returns flowOf(listOf(entity))
 
             // Act
@@ -41,7 +41,7 @@ class RoomLocalDataSourceImplTest : DescribeSpec({
     describe("observeSongById") {
         it("should return flow of song mapped from entity") {
             // Arrange
-            val entity = SongEntity(1L, "Title", "Artist", "cover", "audio", 1000L, 10L, 123456789L)
+            val entity = SongEntity(1L, "Title", "Artist", "cover", "audio", 1000L, 10L, 123456789L, 123456789L)
             every { dao.getById(1L) } returns flowOf(entity)
 
             // Act
@@ -100,7 +100,7 @@ class RoomLocalDataSourceImplTest : DescribeSpec({
                 durationMillis = 1000L,
                 albumId = 10L
             )
-            val entity = SongEntity(1L, "Title", "Artist", "cover", "audio", 1000L, 10L, 123456789L)
+            val entity = SongEntity(1L, "Title", "Artist", "cover", "audio", 1000L, 10L, 123456789L, 123456789L)
             coEvery { dao.findById(1L) } returns entity
 
             // Act

@@ -160,7 +160,8 @@ class SongDaoTest {
         audioUrl: String = "https://test.com/audio.mp3",
         durationMillis: Long = 180000L,
         albumId: Long = 100L,
-        playedAt: Long = System.currentTimeMillis()
+        playedAt: Long = System.currentTimeMillis(),
+        lastPlayedAt: Long = 0L
     ): SongEntity {
         return SongEntity(
             id = id,
@@ -170,7 +171,8 @@ class SongDaoTest {
             audioUrl = audioUrl,
             durationMillis = durationMillis,
             albumId = albumId,
-            playedAt = playedAt
+            playedAt = playedAt,
+            lastPlayedAt = lastPlayedAt
         )
     }
 }
