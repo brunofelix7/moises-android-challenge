@@ -51,12 +51,15 @@ class SongViewModel @Inject constructor(
     private val playerController: PlayerController
 ) : ViewModel() {
 
-    private val _uiEvent = Channel<SongUiEvent>()
-    val uiEvent = _uiEvent.receiveAsFlow()
-
     private val pageSize = 20
     private val maxSearchResults = 100
     private var previousFirstItemId: Long? = null
+
+    /**
+     * Channel for sending UI events to the UI.
+     */
+    private val _uiEvent = Channel<SongUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     /**
      * Retrieves the recently played songs from the database.
@@ -181,6 +184,42 @@ class SongViewModel @Inject constructor(
                 playerController.stop()
             }
             deleteRecentSongUseCase(song.id)
+        }
+    }
+
+    /**
+     * Handles UI actions triggered by the user.
+     * @param action The action to handle.
+     */
+    fun onAction(action: SongUiAction) {
+        when (action) {
+            is SongUiAction.OnShowSearchBarChange -> {
+                _uiState.update { it.copy(showSearchBar = action.show) }
+            }
+            is SongUiAction.OnQueryChange -> {
+                onQueryChange(action.query)
+            }
+            SongUiAction.OnRetrySearch -> {
+                onRetrySearch()
+            }
+            is SongUiAction.OnSongClick -> {
+                onSongPlayed(action.song)
+            }
+            is SongUiAction.OnAlbumClick -> {
+                _uiState.update {
+                    it.copy(
+                        albumId = action.song.albumId ?: 0L,
+                        selectedSong = action.song,
+                        isSheetVisible = true
+                    )
+                }
+            }
+            is SongUiAction.OnDeleteRecentSong -> {
+                onDeleteRecentSong(action.song)
+            }
+            is SongUiAction.OnSheetVisibleChange -> {
+                _uiState.update { it.copy(isSheetVisible = action.visible) }
+            }
         }
     }
 }

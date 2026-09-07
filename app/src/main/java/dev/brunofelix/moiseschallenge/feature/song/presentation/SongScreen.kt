@@ -1,5 +1,6 @@
 package dev.brunofelix.moiseschallenge.feature.song.presentation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,10 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
@@ -31,9 +29,14 @@ import dev.brunofelix.moiseschallenge.core.domain.model.Song
 import dev.brunofelix.moiseschallenge.core.presentation.components.SongActionSheet
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.navigation.Route
+import dev.brunofelix.moiseschallenge.core.presentation.util.ObserveAsEvents
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
-import dev.brunofelix.moiseschallenge.feature.song.presentation.components.RecentSongsContent
+import dev.brunofelix.moiseschallenge.feature.song.presentation.components.RecentSongs
+import dev.brunofelix.moiseschallenge.feature.song.presentation.components.RecentSongsUiAction
+import dev.brunofelix.moiseschallenge.feature.song.presentation.components.RecentSongsUiState
 import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SearchOverlay
+import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SearchOverlayUiAction
+import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SearchOverlayUiState
 import dev.brunofelix.moiseschallenge.feature.song.presentation.components.SongTopBar
 import kotlinx.coroutines.flow.flowOf
 
@@ -44,64 +47,36 @@ internal fun SongRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
-    var showSearchBar by remember { mutableStateOf(false) }
-    var isSheetVisible by remember { mutableStateOf(false) }
-    var albumId by remember { mutableLongStateOf(0L) }
-    var selectedSong by remember { mutableStateOf(Song()) }
+    val onAction = viewModel::onAction
     val listState = rememberLazyListState()
 
-    LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { event ->
-            when (event) {
-                is SongUiEvent.ScrollToTop -> {
-                    listState.animateScrollToItem(0)
-                }
+    ObserveAsEvents(viewModel.uiEvent) { event ->
+        when (event) {
+            is SongUiEvent.ScrollToTop -> {
+                listState.animateScrollToItem(0)
             }
         }
     }
 
-    val currentUiState = uiState.copy(showSearchBar = showSearchBar)
-
     SongScreen(
-        uiState = currentUiState,
+        uiState = uiState,
         searchResults = searchResults,
         listState = listState,
-        onAction = { action ->
-            when (action) {
-                is SongUiAction.OnShowSearchBarChange -> {
-                    showSearchBar = action.show
-                }
-                is SongUiAction.OnQueryChange -> {
-                    viewModel.onQueryChange(action.query)
-                }
-                SongUiAction.OnRetrySearch -> {
-                    viewModel.onRetrySearch()
-                }
-                is SongUiAction.OnSongClick -> {
-                    viewModel.onSongPlayed(action.song)
-                }
-                is SongUiAction.OnAlbumClick -> {
-                    albumId = action.song.albumId ?: 0L
-                    selectedSong = action.song
-                    isSheetVisible = true
-                }
-                is SongUiAction.OnDeleteRecentSong -> {
-                    viewModel.onDeleteRecentSong(action.song)
-                }
-            }
-        }
+        onAction = onAction
     )
 
-    if (isSheetVisible) {
+    AnimatedVisibility(
+        visible = uiState.isSheetVisible
+    ) {
         SongActionSheet(
-            songName = selectedSong.title,
-            artistName = selectedSong.artist,
+            songName = uiState.selectedSong.title,
+            artistName = uiState.selectedSong.artist,
             onDismiss = {
-                isSheetVisible = false
+                onAction(SongUiAction.OnSheetVisibleChange(false))
             },
             onViewAlbumClick = {
-                isSheetVisible = false
-                onNavigate(Route.Album(albumId))
+                onAction(SongUiAction.OnSheetVisibleChange(false))
+                onNavigate(Route.Album(uiState.albumId))
             }
         )
     }
@@ -150,36 +125,54 @@ internal fun SongScreen(
                     .background(MaterialTheme.colorScheme.background)
                     .padding(innerPadding)
             ) {
-                RecentSongsContent(
-                    uiState = uiState.recentSongsState,
-                    listState = listState,
-                    onSongClick = { song ->
-                        closeSearch()
-                        onAction(SongUiAction.OnSongClick(song))
-                    },
-                    onAlbumClick = { song ->
-                        onAction(SongUiAction.OnAlbumClick(song))
-                    },
-                    onDelete = { song ->
-                        onAction(SongUiAction.OnDeleteRecentSong(song))
+                RecentSongs(
+                    uiState = RecentSongsUiState(
+                        uiState = uiState.recentSongsState,
+                        listState = listState
+                    ),
+                    onAction = { action ->
+                        when (action) {
+                            is RecentSongsUiAction.OnSongClick -> {
+                                closeSearch()
+                                onAction(SongUiAction.OnSongClick(action.song))
+                            }
+                            is RecentSongsUiAction.OnAlbumClick -> {
+                                onAction(SongUiAction.OnAlbumClick(action.song))
+                            }
+                            is RecentSongsUiAction.OnDelete -> {
+                                onAction(SongUiAction.OnDeleteRecentSong(action.song))
+                            }
+                        }
                     }
                 )
                 SearchOverlay(
-                    isVisible = uiState.showSearchBar,
-                    query = uiState.query,
-                    searchState = uiState.searchState,
+                    uiState = SearchOverlayUiState(
+                        isVisible = uiState.showSearchBar,
+                        query = uiState.query,
+                        searchState = uiState.searchState,
+                        focusRequester = focusRequester
+                    ),
                     searchResults = searchResults,
-                    focusRequester = focusRequester,
-                    onQueryChange = { query -> onAction(SongUiAction.OnQueryChange(query)) },
-                    onClose = closeSearch,
-                    onSongClick = { song ->
-                        closeSearch()
-                        onAction(SongUiAction.OnSongClick(song))
+                    onAction = { action ->
+                        when (action) {
+                            is SearchOverlayUiAction.OnQueryChange -> {
+                                onAction(SongUiAction.OnQueryChange(action.query))
+                            }
+                            is SearchOverlayUiAction.OnClose -> {
+                                closeSearch()
+                            }
+                            is SearchOverlayUiAction.OnSongClick -> {
+                                closeSearch()
+                                onAction(SongUiAction.OnSongClick(action.song))
+                            }
+                            is SearchOverlayUiAction.OnAlbumClick -> {
+                                onAction(SongUiAction.OnAlbumClick(action.song))
+                            }
+                            is SearchOverlayUiAction.OnRetry -> {
+                                onAction(SongUiAction.OnRetrySearch)
+                            }
+                        }
                     },
-                    onAlbumClick = { song ->
-                        onAction(SongUiAction.OnAlbumClick(song))
-                    },
-                    onRetry = { onAction(SongUiAction.OnRetrySearch) },
                     modifier = Modifier.zIndex(1f)
                 )
             }

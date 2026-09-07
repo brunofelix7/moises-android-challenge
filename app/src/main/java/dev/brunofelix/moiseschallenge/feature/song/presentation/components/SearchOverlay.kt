@@ -27,7 +27,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import dev.brunofelix.moiseschallenge.R
 import dev.brunofelix.moiseschallenge.core.domain.model.Song
@@ -35,27 +38,37 @@ import dev.brunofelix.moiseschallenge.core.presentation.components.AppSearchBar
 import dev.brunofelix.moiseschallenge.core.presentation.components.AppStateMessage
 import dev.brunofelix.moiseschallenge.core.presentation.components.SongItem
 import dev.brunofelix.moiseschallenge.core.presentation.components.SongItemSkeleton
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.largeSpacing
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.smallSpacing
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.spacing16
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
+import kotlinx.coroutines.flow.flowOf
+
+data class SearchOverlayUiState(
+    val isVisible: Boolean = false,
+    val query: String = "",
+    val searchState: UiState<Unit> = UiState.Initial,
+    val focusRequester: FocusRequester = FocusRequester()
+)
+
+sealed interface SearchOverlayUiAction {
+    data class OnQueryChange(val query: String) : SearchOverlayUiAction
+    data object OnClose : SearchOverlayUiAction
+    data class OnSongClick(val song: Song) : SearchOverlayUiAction
+    data class OnAlbumClick(val song: Song) : SearchOverlayUiAction
+    data object OnRetry : SearchOverlayUiAction
+}
 
 @Composable
 internal fun SearchOverlay(
-    isVisible: Boolean,
-    query: String,
-    searchState: UiState<Unit>,
+    uiState: SearchOverlayUiState,
     searchResults: LazyPagingItems<Song>,
-    focusRequester: FocusRequester,
-    onQueryChange: (String) -> Unit,
-    onClose: () -> Unit,
-    onSongClick: (Song) -> Unit,
-    onAlbumClick: (Song) -> Unit,
-    onRetry: () -> Unit,
+    onAction: (SearchOverlayUiAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
-        visible = isVisible,
+        visible = uiState.isVisible,
         enter = fadeIn(),
         exit = fadeOut(),
         modifier = modifier
@@ -67,7 +80,7 @@ internal fun SearchOverlay(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
-                ) { onClose() },
+                ) { onAction(SearchOverlayUiAction.OnClose) },
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 Box(
@@ -78,12 +91,12 @@ internal fun SearchOverlay(
                         .clickable(enabled = false) {}
                 ) {
                     AppSearchBar(
-                        query = query,
-                        onQueryChange = onQueryChange,
-                        modifier = Modifier.focusRequester(focusRequester)
+                        query = uiState.query,
+                        onQueryChange = { query -> onAction(SearchOverlayUiAction.OnQueryChange(query)) },
+                        modifier = Modifier.focusRequester(uiState.focusRequester)
                     )
                 }
-                when (searchState) {
+                when (uiState.searchState) {
                     is UiState.Loading -> {
                         SearchList(modifier = Modifier.fillMaxSize()) {
                             items(10) { SongItemSkeleton() }
@@ -102,8 +115,8 @@ internal fun SearchOverlay(
                         AppStateMessage(
                             icon = Icons.Rounded.ErrorOutline,
                             title = stringResource(R.string.error_title),
-                            subtitle = searchState.uiText.asString(LocalContext.current),
-                            onRetry = onRetry,
+                            subtitle = uiState.searchState.uiText.asString(LocalContext.current),
+                            onRetry = { onAction(SearchOverlayUiAction.OnRetry) },
                             verticalArrangement = Arrangement.Top,
                             modifier = Modifier.fillMaxSize(),
                         )
@@ -118,8 +131,8 @@ internal fun SearchOverlay(
                                 if (song != null) {
                                     SongItem(
                                         song = song,
-                                        onAction = { song.albumId?.let { onAlbumClick(song) } },
-                                        onClick = { onSongClick(song) }
+                                        onAction = { song.albumId?.let { onAction(SearchOverlayUiAction.OnAlbumClick(song)) } },
+                                        onClick = { onAction(SearchOverlayUiAction.OnSongClick(song)) }
                                     )
                                 }
                             }
@@ -144,4 +157,40 @@ private fun SearchList(
         contentPadding = PaddingValues(bottom = largeSpacing),
         content = content
     )
+}
+
+@Preview
+@Composable
+private fun SearchOverlayPreview() {
+    val mockSongs = listOf(
+        Song(id = 1, title = "Numb", artist = "Linkin Park", albumId = 1L),
+        Song(id = 2, title = "In the End", artist = "Linkin Park", albumId = 2L)
+    )
+    AppTheme {
+        SearchOverlay(
+            uiState = SearchOverlayUiState(
+                isVisible = true,
+                query = "Linkin",
+                searchState = UiState.Success(Unit)
+            ),
+            searchResults = flowOf(PagingData.from(mockSongs)).collectAsLazyPagingItems(),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SearchOverlayEmptyPreview() {
+    AppTheme {
+        SearchOverlay(
+            uiState = SearchOverlayUiState(
+                isVisible = true,
+                query = "Unknown",
+                searchState = UiState.Empty
+            ),
+            searchResults = flowOf(PagingData.empty<Song>()).collectAsLazyPagingItems(),
+            onAction = {}
+        )
+    }
 }

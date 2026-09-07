@@ -25,29 +25,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import dev.brunofelix.moiseschallenge.R
 import dev.brunofelix.moiseschallenge.core.domain.model.Song
 import dev.brunofelix.moiseschallenge.core.presentation.components.AppStateMessage
 import dev.brunofelix.moiseschallenge.core.presentation.components.SongItem
 import dev.brunofelix.moiseschallenge.core.presentation.components.SongItemSkeleton
+import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.largeSpacing
 import dev.brunofelix.moiseschallenge.core.presentation.design_system.spacing16
 import dev.brunofelix.moiseschallenge.core.presentation.util.UiState
 
+data class RecentSongsUiState(
+    val uiState: UiState<List<Song>> = UiState.Loading,
+    val listState: LazyListState = LazyListState()
+)
+
+sealed interface RecentSongsUiAction {
+    data class OnSongClick(val song: Song) : RecentSongsUiAction
+    data class OnAlbumClick(val song: Song) : RecentSongsUiAction
+    data class OnDelete(val song: Song) : RecentSongsUiAction
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun RecentSongsContent(
-    uiState: UiState<List<Song>>,
-    onSongClick: (Song) -> Unit,
-    onAlbumClick: (Song) -> Unit,
-    onDelete: (Song) -> Unit,
-    modifier: Modifier = Modifier,
-    listState: LazyListState = rememberLazyListState()
+internal fun RecentSongs(
+    uiState: RecentSongsUiState,
+    onAction: (RecentSongsUiAction) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        when (uiState) {
+        when (uiState.uiState) {
             is UiState.Initial, is UiState.Loading -> {
                 RecentSongsList(modifier = Modifier.fillMaxSize()) {
                     items(10) { SongItemSkeleton() }
@@ -65,23 +75,23 @@ internal fun RecentSongsContent(
                 AppStateMessage(
                     icon = Icons.Rounded.ErrorOutline,
                     title = stringResource(R.string.error_title),
-                    subtitle = uiState.uiText.asString(LocalContext.current),
+                    subtitle = uiState.uiState.uiText.asString(LocalContext.current),
                     modifier = Modifier.fillMaxSize(),
                 )
             }
             is UiState.Success -> {
                 RecentSongsList(
                     modifier = Modifier.fillMaxSize(),
-                    listState = listState
+                    listState = uiState.listState
                 ) {
                     items(
-                        items = uiState.data,
+                        items = uiState.uiState.data,
                         key = { it.id }
                     ) { song ->
                         val dismissState = rememberSwipeToDismissBoxState()
                         LaunchedEffect(dismissState.currentValue) {
                             if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart || dismissState.currentValue == SwipeToDismissBoxValue.StartToEnd) {
-                                onDelete(song)
+                                onAction(RecentSongsUiAction.OnDelete(song))
                             }
                         }
                         SwipeToDismissBox(
@@ -101,8 +111,8 @@ internal fun RecentSongsContent(
                         ) {
                             SongItem(
                                 song = song,
-                                onAction = { song.albumId?.let { id -> onAlbumClick(song) } },
-                                onClick = { onSongClick(song) }
+                                onAction = { song.albumId?.let { id -> onAction(RecentSongsUiAction.OnAlbumClick(song)) } },
+                                onClick = { onAction(RecentSongsUiAction.OnSongClick(song)) }
                             )
                         }
                     }
@@ -124,4 +134,41 @@ private fun RecentSongsList(
         contentPadding = PaddingValues(bottom = largeSpacing),
         content = content
     )
+}
+
+@Preview
+@Composable
+private fun RecentSongsLoadingPreview() {
+    AppTheme {
+        RecentSongs(
+            uiState = RecentSongsUiState(uiState = UiState.Loading),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun RecentSongsEmptyPreview() {
+    AppTheme {
+        RecentSongs(
+            uiState = RecentSongsUiState(uiState = UiState.Empty),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun RecentSongsSuccessPreview() {
+    val mockSongs = listOf(
+        Song(id = 1, title = "Numb", artist = "Linkin Park", albumId = 1L),
+        Song(id = 2, title = "In the End", artist = "Linkin Park", albumId = 2L)
+    )
+    AppTheme {
+        RecentSongs(
+            uiState = RecentSongsUiState(uiState = UiState.Success(mockSongs)),
+            onAction = {}
+        )
+    }
 }
