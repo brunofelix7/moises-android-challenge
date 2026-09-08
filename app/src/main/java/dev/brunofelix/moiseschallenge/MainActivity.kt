@@ -6,14 +6,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
-import dev.brunofelix.moiseschallenge.core.presentation.MoisesApp
-import dev.brunofelix.moiseschallenge.core.presentation.design_system.AppTheme
+import dev.brunofelix.moiseschallenge.theme.AppTheme
+import dev.brunofelix.moiseschallenge.viewmodel.NavigationViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -34,7 +39,19 @@ class MainActivity : ComponentActivity() {
                 controller.isAppearanceLightNavigationBars = false
             }
             AppTheme {
-                MoisesApp()
+                MoisesApp(
+                    navigationContent = { innerPadding ->
+                        val viewModel: NavigationViewModel = hiltViewModel()
+                        val backStack by viewModel.backStack.collectAsStateWithLifecycle()
+                        NavigationGraph(
+                            backStack = backStack,
+                            onNavigate = viewModel::navigateTo,
+                            onReplace = viewModel::replaceCurrent,
+                            onBack = viewModel::popBackStack,
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
+                )
             }
         }
     }

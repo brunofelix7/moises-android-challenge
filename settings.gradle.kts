@@ -24,3 +24,11 @@ dependencyResolutionManagement {
 
 rootProject.name = "moises-android-challenge"
 include(":app")
+include(":core:domain")
+include(":core:data")
+include(":core:designsystem")
+include(":core:presentation")
+include(":feature:splash")
+include(":feature:song")
+include(":feature:album")
+include(":feature:player")
